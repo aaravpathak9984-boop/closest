@@ -1,0 +1,44 @@
+/* ==========================================================================
+   SKETCH ANNOTATIONS & UTILITY CLASSES
+   macOS details, paper rules, status markers, and layout helpers
+   ========================================================================== */
+
+.paper-rule {
+  border: none;
+  border-top: 1px dashed var(--color-border);
+  margin: 1.5rem 0;
+}
+
+.red-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  background-color: var(--color-red-accent);
+  border-radius: 50%;
+  margin-right: 0.45rem;
+}
+
+/* Flex / Grid Helpers */
+.d-flex { display: flex; }
+.flex-column { flex-direction: column; }
+.align-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.gap-1 { gap: 0.5rem; }
+.gap-2 { gap: 1rem; }
+.gap-3 { gap: 1.5rem; }
+
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-muted { color: var(--color-muted); }
+.text-accent { color: var(--color-red-accent); }
+
+.w-100 { width: 100%; }

@@ -1,0 +1,153 @@
+<div class="dashboard-layout">
+  <!-- Sidebar Navigation -->
+  <%- include('../partials/sidebar') %>
+
+  <!-- Main Content Area -->
+  <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+    <!-- Welcome Header -->
+    <div class="glass-card d-flex justify-between align-center" style="padding: 1.25rem 1.5rem;">
+      <div>
+        <span class="mono-label" style="color: var(--color-red-accent);">Clinic Portal Overview</span>
+        <h2 style="margin: 0.15rem 0 0;">Welcome, <%= user ? user.name : 'User' %></h2>
+        <p style="font-size: 0.85rem; margin: 0; color: var(--color-soft-ink);">
+          Role: <span class="badge badge-red"><%= user ? user.role : 'patient' %></span> | Email: <%= user ? user.email : '' %>
+        </p>
+      </div>
+
+      <div style="display: flex; gap: 0.5rem;">
+        <% if (user && user.role === 'admin') { %>
+          <a href="/admin/dashboard" class="btn btn-accent btn-sm">👑 Open Admin Console</a>
+        <% } else if (user && user.role === 'doctor') { %>
+          <a href="/appointments/doctor-queue" class="btn btn-accent btn-sm">📋 Open Doctor Queue</a>
+        <% } else { %>
+          <a href="/doctors" class="btn btn-accent btn-sm">🩺 Book New Appointment</a>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Clinic Metric Cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;">
+      <% if (user && user.role === 'doctor') { %>
+        <div class="paper-card" style="padding: 1.1rem;">
+          <span class="mono-label" style="font-size: 0.68rem;">Total Requests</span>
+          <div style="font-family: var(--font-serif); font-size: 1.8rem; font-weight: 700; color: var(--color-ink); margin-top: 0.2rem;">
+            <%= metrics.totalAppointments || 0 %>
+          </div>
+          <span style="font-size: 0.75rem; color: var(--color-soft-ink);">Patient Bookings</span>
+        </div>
+
+        <div class="paper-card" style="padding: 1.1rem;">
+          <span class="mono-label" style="font-size: 0.68rem;">Pending Action</span>
+          <div style="font-family: var(--font-serif); font-size: 1.8rem; font-weight: 700; color: var(--color-red-accent); margin-top: 0.2rem;">
+            <%= metrics.pendingCount || 0 %>
+          </div>
+          <span style="font-size: 0.75rem; color: var(--color-soft-ink);">Requires Accept/Reject</span>
+        </div>
+
+        <div class="paper-card" style="padding: 1.1rem;">
+          <span class="mono-label" style="font-size: 0.68rem;">Accepted Visits</span>
+          <div style="font-family: var(--font-serif); font-size: 1.8rem; font-weight: 700; color: #8C550A; margin-top: 0.2rem;">
+            <%= metrics.acceptedCount || 0 %>
+          </div>
+          <span style="font-size: 0.75rem; color: var(--color-soft-ink);">Scheduled Consultations</span>
+        </div>
+
+        <div class="paper-card" style="padding: 1.1rem;">
+          <span class="mono-label" style="font-size: 0.68rem;">Completed</span>
+          <div style="font-family: var(--font-serif); font-size: 1.8rem; font-weight: 700; color: #1B5E34; margin-top: 0.2rem;">
+            <%= metrics.completedCount || 0 %>
+          </div>
+          <span style="font-size: 0.75rem; color: var(--color-soft-ink);">Finished Appointments</span>
+        </div>
+      <% } else { %>
+        <div class="paper-card" style="padding: 1.1rem;">
+          <span class="mono-label" style="font-size: 0.68rem;">Available Doctors</span>
+          <div style="font-family: var(--font-serif); font-size: 1.8rem; font-weight: 700; color: var(--color-ink); margin-top: 0.2rem;">
+            <%= metrics.totalDoctors || 4 %>
+          </div>
+          <span style="font-size: 0.75rem; color: var(--color-soft-ink);">Clinic Specialists</span>
+        </div>
+
+        <div class="paper-card" style="padding: 1.1rem;">
+          <span class="mono-label" style="font-size: 0.68rem;">Active Bookings</span>
+          <div style="font-family: var(--font-serif); font-size: 1.8rem; font-weight: 700; color: var(--color-red-accent); margin-top: 0.2rem;">
+            <%= metrics.activeBookings || 0 %>
+          </div>
+          <span style="font-size: 0.75rem; color: var(--color-soft-ink);">Pending & Accepted</span>
+        </div>
+
+        <div class="paper-card" style="padding: 1.1rem;">
+          <span class="mono-label" style="font-size: 0.68rem;">Completed Visits</span>
+          <div style="font-family: var(--font-serif); font-size: 1.8rem; font-weight: 700; color: #1B5E34; margin-top: 0.2rem;">
+            <%= metrics.completedVisits || 0 %>
+          </div>
+          <span style="font-size: 0.75rem; color: var(--color-soft-ink);">Past Medical Visits</span>
+        </div>
+
+        <div class="paper-card" style="padding: 1.1rem;">
+          <span class="mono-label" style="font-size: 0.68rem;">System Status</span>
+          <div style="font-family: var(--font-serif); font-size: 1.4rem; font-weight: 700; color: #1B5E34; margin-top: 0.2rem;">
+            <%= metrics.systemStatus || 'Online' %>
+          </div>
+          <span style="font-size: 0.75rem; color: var(--color-soft-ink);">Clinic Booking System</span>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Recent Appointments Table -->
+    <div class="paper-card" style="padding: 1.25rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <div>
+          <h3 style="margin: 0;">Recent Appointment Activity</h3>
+          <p style="font-size: 0.8rem; color: var(--color-soft-ink); margin: 0;">
+            Overview of upcoming and recent healthcare consultations
+          </p>
+        </div>
+
+        <div>
+          <% if (user && (user.role === 'doctor' || user.role === 'admin')) { %>
+            <a href="/appointments/doctor-queue" class="btn btn-outline btn-sm">View Full Queue &rarr;</a>
+          <% } else { %>
+            <a href="/appointments/my-appointments" class="btn btn-outline btn-sm">View Full History &rarr;</a>
+          <% } %>
+        </div>
+      </div>
+
+      <% if (recentAppointments && recentAppointments.length > 0) { %>
+        <div class="table-container">
+          <table class="editorial-table">
+            <thead>
+              <tr>
+                <th>Date & Slot</th>
+                <th><%= user && user.role === 'doctor' ? 'Patient' : 'Doctor' %></th>
+                <th>Reason</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% recentAppointments.forEach(app => { %>
+                <tr>
+                  <td>
+                    <div style="font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600;"><%= app.date %></div>
+                    <div class="mono-label" style="font-size: 0.72rem;"><%= app.timeSlot %></div>
+                  </td>
+                  <td style="font-weight: 600;">
+                    <%= user && user.role === 'doctor' ? (app.patient ? app.patient.name : 'Patient') : (app.doctor ? app.doctor.name : 'Doctor') %>
+                  </td>
+                  <td style="font-size: 0.85rem; color: var(--color-soft-ink);"><%= app.reason %></td>
+                  <td>
+                    <span class="badge <%= app.status === 'accepted' ? 'badge-green' : app.status === 'completed' ? 'badge-paper' : app.status === 'pending' ? 'badge-yellow' : 'badge-red' %>">
+                      <%= app.status %>
+                    </span>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <%- include('../partials/empty-state', { title: 'No Appointments Found', message: 'No recent appointment records to display.', actionUrl: '/doctors', actionLabel: 'Browse Clinic Doctors' }) %>
+      <% } %>
+    </div>
+  </div>
+</div>

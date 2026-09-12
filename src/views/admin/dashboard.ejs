@@ -1,0 +1,561 @@
+<div style="max-width: 1180px; margin: 1.5rem auto;">
+  <!-- Clinic Admin Header Bar -->
+  <div class="glass-card sketch-corner mb-3" style="padding: 1.5rem 2rem;">
+    <div class="macos-window-header">
+      <span class="macos-dot macos-dot-red"></span>
+      <span class="macos-dot macos-dot-yellow"></span>
+      <span class="macos-dot macos-dot-green"></span>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.2rem;">
+          <span class="mono-label" style="color: var(--color-red-accent);">Clinic Master Administration</span>
+          <span class="badge badge-red">👑 Master Admin Portal</span>
+        </div>
+        <h2 style="margin: 0.15rem 0 0.25rem;">Clinic Operations & Analytics Console</h2>
+        <p style="font-size: 0.88rem; color: var(--color-soft-ink); margin: 0;">
+          Logged in as: <strong><%= user.name %></strong> (<%= user.email %>)
+        </p>
+      </div>
+
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        <button type="button" class="btn btn-accent btn-sm" data-modal-target="addDoctorModal">
+          ➕ Register Doctor
+        </button>
+        <a href="/dashboard" class="btn btn-outline btn-sm">📊 Overview Dashboard</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Financial & Operational Analytics Metric Grid -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+    <div class="paper-card" style="padding: 1.25rem;">
+      <span class="mono-label" style="font-size: 0.68rem;">Total Clinic Revenue</span>
+      <div style="font-family: var(--font-serif); font-size: 2.1rem; font-weight: 700; color: #1B5E34; margin-top: 0.2rem;">
+        ₹<%= metrics.totalRevenue.toLocaleString() %>
+      </div>
+      <span style="font-size: 0.75rem; color: var(--color-soft-ink);">From Completed Consultations</span>
+    </div>
+
+    <div class="paper-card" style="padding: 1.25rem;">
+      <span class="mono-label" style="font-size: 0.68rem;">Registered Patients</span>
+      <div style="font-family: var(--font-serif); font-size: 2.1rem; font-weight: 700; color: var(--color-ink); margin-top: 0.2rem;">
+        <%= metrics.totalPatients %>
+      </div>
+      <span style="font-size: 0.75rem; color: var(--color-soft-ink);">Patient Accounts</span>
+    </div>
+
+    <div class="paper-card" style="padding: 1.25rem;">
+      <span class="mono-label" style="font-size: 0.68rem;">Clinic Specialists</span>
+      <div style="font-family: var(--font-serif); font-size: 2.1rem; font-weight: 700; color: var(--color-red-accent); margin-top: 0.2rem;">
+        <%= metrics.totalDoctors %>
+      </div>
+      <span style="font-size: 0.75rem; color: var(--color-soft-ink);">Active Doctors</span>
+    </div>
+
+    <div class="paper-card" style="padding: 1.25rem;">
+      <span class="mono-label" style="font-size: 0.68rem;">Total Consultations</span>
+      <div style="font-family: var(--font-serif); font-size: 2.1rem; font-weight: 700; color: var(--color-ink); margin-top: 0.2rem;">
+        <%= metrics.totalAppointments %>
+      </div>
+      <span style="font-size: 0.75rem; color: var(--color-soft-ink);">
+        <%= metrics.pendingCount %> Pending • <%= metrics.completedCount %> Done
+      </span>
+    </div>
+  </div>
+
+  <!-- SECTION 0: Pending Doctor Applications Verification (Admin Action Required) -->
+  <% if (pendingDoctors && pendingDoctors.length > 0) { %>
+    <div class="paper-card mb-4" style="padding: 1.5rem; border: 2px solid var(--color-red-accent); background: rgba(194, 59, 34, 0.02);" id="pendingSec">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+        <div>
+          <span class="badge badge-red" style="font-size: 0.7rem; margin-bottom: 0.25rem;">Action Required (<%= pendingDoctors.length %>)</span>
+          <h3 style="margin: 0.1rem 0 0;">👨‍⚕️ Doctor Verification Applications</h3>
+          <p style="font-size: 0.82rem; color: var(--color-soft-ink); margin: 0;">
+            Review and approve doctor registrations before they appear in the active clinic directory
+          </p>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table class="editorial-table">
+          <thead>
+            <tr>
+              <th>Doctor Applicant</th>
+              <th>Email</th>
+              <th>Specialization</th>
+              <th>Applied Date</th>
+              <th style="text-align: right;">Admin Verification Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% pendingDoctors.forEach(doc => { %>
+              <tr>
+                <td style="font-weight: 600;"><%= doc.name %></td>
+                <td style="font-size: 0.82rem;"><%= doc.user?.email || 'N/A' %></td>
+                <td><span class="badge badge-yellow"><%= doc.specialization %></span></td>
+                <td style="font-family: var(--font-mono); font-size: 0.8rem;"><%= new Date(doc.createdAt).toLocaleDateString() %></td>
+                <td style="text-align: right;">
+                  <div style="display: flex; gap: 0.4rem; justify-content: flex-end;">
+                    <form action="/admin/doctors/<%= doc._id %>/approve" method="POST" style="display: inline;">
+                      <button type="submit" class="btn btn-secondary btn-sm" style="color: #1B5E34; font-weight: 600;">
+                        ✅ Verify & Approve
+                      </button>
+                    </form>
+                    <form action="/admin/doctors/<%= doc._id %>/reject" method="POST" style="display: inline;">
+                      <button type="submit" class="btn btn-outline btn-sm" style="color: var(--color-red-accent);">
+                        ❌ Reject
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- REJECTED DOCTOR APPLICATIONS LIST -->
+  <% if (rejectedDoctors && rejectedDoctors.length > 0) { %>
+    <div class="glass-card sketch-corner mb-4" style="padding: 1.25rem 1.75rem; border-left: 4px solid var(--color-red-accent); background: #FFFDFD;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <div>
+          <span class="badge badge-red mb-1">❌ Rejected Applications (<%= rejectedDoctors.length %>)</span>
+          <h3 style="margin: 0.1rem 0;">Rejected Doctor Registrations</h3>
+          <p style="font-size: 0.82rem; color: var(--color-soft-ink); margin: 0;">
+            Applications marked as rejected. Click to re-approve and activate doctor.
+          </p>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table class="editorial-table">
+          <thead>
+            <tr>
+              <th>Doctor Applicant</th>
+              <th>Email</th>
+              <th>Specialization</th>
+              <th>Status</th>
+              <th style="text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% rejectedDoctors.forEach(doc => { %>
+              <tr>
+                <td style="font-weight: 600;"><%= doc.name %></td>
+                <td style="font-size: 0.82rem;"><%= doc.user?.email || 'N/A' %></td>
+                <td><span class="badge badge-red"><%= doc.specialization %></span></td>
+                <td><span class="badge badge-red">Rejected</span></td>
+                <td style="text-align: right;">
+                  <form action="/admin/doctors/<%= doc._id %>/approve" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-secondary btn-sm" style="color: #1B5E34; font-weight: 600;">
+                      ✅ Re-Consider & Approve
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- SECTION 1: Doctor Directory & Management Table -->
+  <div class="paper-card mb-4" style="padding: 1.5rem;" id="doctorsSec">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h3 style="margin: 0;">Clinic Doctors Management</h3>
+        <p style="font-size: 0.82rem; color: var(--color-soft-ink); margin: 0;">
+          View and manage all active doctors, consultation fees, and working hours
+        </p>
+      </div>
+
+      <button type="button" class="btn btn-primary btn-sm" data-modal-target="addDoctorModal">
+        ➕ Register Doctor
+      </button>
+    </div>
+
+    <% if (doctors && doctors.length > 0) { %>
+      <div class="table-container">
+        <table class="editorial-table">
+          <thead>
+            <tr>
+              <th>Doctor Name</th>
+              <th>Specialization</th>
+              <th>Qualifications</th>
+              <th>Rating & Reviews</th>
+              <th>Fee (₹)</th>
+              <th>Working Hours</th>
+              <th style="text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% doctors.forEach(doc => { %>
+              <tr>
+                <td style="font-weight: 600;"><%= doc.name %></td>
+                <td><span class="badge badge-red"><%= doc.specialization %></span></td>
+                <td style="font-size: 0.82rem;"><%= doc.qualification %></td>
+                <td>
+                  <span style="color: #D9822B; font-weight: 600; font-size: 0.85rem;">
+                    <%= doc.reviewCount > 0 ? '⭐ ' + doc.averageRating.toFixed(1) + ' (' + doc.reviewCount + ')' : '⭐ New' %>
+                  </span>
+                </td>
+                <td style="font-family: var(--font-serif); font-weight: 700;">₹<%= doc.consultationFee %></td>
+                <td style="font-family: var(--font-mono); font-size: 0.8rem;"><%= doc.workingHours?.start || '09:00' %> - <%= doc.workingHours?.end || '17:00' %></td>
+                <td style="text-align: right;">
+                  <form action="/admin/doctors/<%= doc._id %>/delete" method="POST" onsubmit="return confirm('Are you sure you want to remove Dr. <%= doc.name %> from clinic directory?');" style="display: inline;">
+                    <button type="submit" class="btn btn-outline btn-sm" style="color: var(--color-red-accent); border-color: rgba(143, 45, 45, 0.3);">
+                      Delete
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- SECTION 1.5: Clinic Branches & Medical Departments Grid -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+    <!-- Clinic Branches Card -->
+    <div class="paper-card" style="padding: 1.5rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <div>
+          <span class="mono-label" style="color: var(--color-red-accent);">Location Network</span>
+          <h3 style="margin: 0.1rem 0;">Clinic Branches</h3>
+        </div>
+        <span class="badge badge-paper"><%= branches ? branches.length : 0 %> Locations</span>
+      </div>
+
+      <% if (branches && branches.length > 0) { %>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <% branches.forEach(b => { %>
+            <div style="padding: 0.85rem 1rem; border: 1px solid var(--color-border); border-radius: 6px; background: var(--bg-white);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.2rem;">
+                <strong style="font-size: 0.9rem; color: var(--color-ink);"><%= b.branchName %></strong>
+                <span class="badge badge-red"><%= b.city %></span>
+              </div>
+              <p style="font-size: 0.78rem; color: var(--color-soft-ink); margin: 0 0 0.35rem;"><%= b.address %></p>
+              <div style="font-size: 0.75rem; font-family: var(--font-mono); color: #1B5E34;">
+                📞 <%= b.emergencyPhone %> • <%= b.operatingHours %>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Medical Departments Card -->
+    <div class="paper-card" style="padding: 1.5rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <div>
+          <span class="mono-label" style="color: var(--color-red-accent);">Clinical Divisions</span>
+          <h3 style="margin: 0.1rem 0;">Medical Departments</h3>
+        </div>
+        <span class="badge badge-paper"><%= departments ? departments.length : 0 %> Departments</span>
+      </div>
+
+      <% if (departments && departments.length > 0) { %>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.65rem;">
+          <% departments.forEach(d => { %>
+            <div style="padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 6px; background: var(--bg-white);">
+              <div style="font-size: 1.25rem; margin-bottom: 0.2rem;"><%= d.icon %></div>
+              <strong style="font-size: 0.85rem; display: block; margin-bottom: 0.1rem;"><%= d.name %></strong>
+              <span class="mono-label" style="font-size: 0.68rem; color: var(--color-soft-ink);"><%= d.floorLocation %></span>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- SECTION 1.8: Patient Medical Records & Prescriptions -->
+  <div class="paper-card mb-4" style="padding: 1.5rem;" id="medicalRecordsSec">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+      <div>
+        <span class="mono-label" style="color: var(--color-red-accent);">Clinical Documentation</span>
+        <h3 style="margin: 0.1rem 0;">Patient Medical Records & Prescriptions</h3>
+        <p style="font-size: 0.82rem; color: var(--color-soft-ink); margin: 0;">
+          Diagnostic records, prescribed dosages, and lab recommendations
+        </p>
+      </div>
+      <span class="badge badge-green"><%= medicalRecords ? medicalRecords.length : 0 %> Active Records</span>
+    </div>
+
+    <% if (medicalRecords && medicalRecords.length > 0) { %>
+      <div class="table-container">
+        <table class="editorial-table">
+          <thead>
+            <tr>
+              <th>Visit Date</th>
+              <th>Patient Name</th>
+              <th>Attending Doctor</th>
+              <th>Clinical Diagnosis</th>
+              <th>Prescriptions & Lab Tests</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% medicalRecords.forEach(rec => { %>
+              <tr>
+                <td style="font-family: var(--font-mono); font-size: 0.82rem;"><%= rec.visitDate %></td>
+                <td style="font-weight: 600;"><%= rec.patientName %></td>
+                <td style="color: var(--color-red-accent); font-weight: 500;"><%= rec.doctor ? rec.doctor.name : 'Dr. Practitioner' %></td>
+                <td style="font-size: 0.85rem; font-weight: 500;"><%= rec.diagnosis %></td>
+                <td style="font-size: 0.78rem;">
+                  <div style="font-weight: 600;"><%= rec.prescriptions ? rec.prescriptions.length : 0 %> Prescriptions</div>
+                  <div style="color: var(--color-soft-ink);"><%= rec.labTestsRecommended ? rec.labTestsRecommended.join(', ') : 'None' %></div>
+                </td>
+                <td>
+                  <span class="badge <%= rec.status === 'active' ? 'badge-green' : 'badge-paper' %>">
+                    <%= rec.status %>
+                  </span>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <p style="font-size: 0.85rem; color: var(--color-soft-ink);">No clinical medical records found in database.</p>
+    <% } %>
+  </div>
+
+  <!-- SECTION 2: Master Clinic Appointments Queue -->
+  <div class="paper-card mb-4" style="padding: 1.5rem;" id="appointmentsSec">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h3 style="margin: 0;">Master Clinic Appointments Log</h3>
+        <p style="font-size: 0.82rem; color: var(--color-soft-ink); margin: 0;">
+          All patient consultation records across clinic doctors
+        </p>
+      </div>
+
+      <!-- Filters -->
+      <form action="/admin/dashboard" method="GET" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        <select name="doctor" class="form-control" onchange="this.form.submit()" style="width: 170px; font-size: 0.82rem;">
+          <option value="">All Doctors</option>
+          <% doctors.forEach(d => { %>
+            <option value="<%= d._id %>" <%= selectedDoctor === d._id.toString() ? 'selected' : '' %>><%= d.name %></option>
+          <% }); %>
+        </select>
+
+        <select name="status" class="form-control" onchange="this.form.submit()" style="width: 140px; font-size: 0.82rem;">
+          <option value="">All Statuses</option>
+          <option value="pending" <%= selectedStatus === 'pending' ? 'selected' : '' %>>Pending</option>
+          <option value="accepted" <%= selectedStatus === 'accepted' ? 'selected' : '' %>>Accepted</option>
+          <option value="completed" <%= selectedStatus === 'completed' ? 'selected' : '' %>>Completed</option>
+          <option value="rejected" <%= selectedStatus === 'rejected' ? 'selected' : '' %>>Rejected</option>
+        </select>
+
+        <% if (selectedDoctor || selectedStatus) { %>
+          <a href="/admin/dashboard" class="btn btn-outline btn-sm">Clear</a>
+        <% } %>
+      </form>
+    </div>
+
+    <% if (appointments && appointments.length > 0) { %>
+      <div class="table-container">
+        <table class="editorial-table">
+          <thead>
+            <tr>
+              <th>Date & Slot</th>
+              <th>Patient</th>
+              <th>Assigned Doctor</th>
+              <th>Reason</th>
+              <th>Status</th>
+              <th style="text-align: right;">Admin Override</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% appointments.forEach(app => { %>
+              <tr>
+                <td>
+                  <div style="font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600;"><%= app.date %></div>
+                  <div class="mono-label" style="font-size: 0.72rem;"><%= app.timeSlot %></div>
+                </td>
+                <td style="font-weight: 600;"><%= app.patient ? app.patient.name : 'Patient' %></td>
+                <td style="font-weight: 500; color: var(--color-red-accent);"><%= app.doctor ? app.doctor.name : 'Doctor' %></td>
+                <td style="font-size: 0.82rem; color: var(--color-soft-ink);"><%= app.reason %></td>
+                <td>
+                  <span class="badge <%= app.status === 'accepted' ? 'badge-green' : app.status === 'completed' ? 'badge-paper' : app.status === 'pending' ? 'badge-yellow' : 'badge-red' %>">
+                    <%= app.status %>
+                  </span>
+                </td>
+                <td style="text-align: right;">
+                  <div style="display: flex; gap: 0.3rem; justify-content: flex-end;">
+                    <% if (app.status === 'pending') { %>
+                      <form action="/appointments/<%= app._id %>/status" method="POST" style="display: inline;">
+                        <input type="hidden" name="status" value="accepted">
+                        <button type="submit" class="btn btn-secondary btn-sm" style="color: #1B5E34;">Accept</button>
+                      </form>
+                      <form action="/appointments/<%= app._id %>/status" method="POST" style="display: inline;">
+                        <input type="hidden" name="status" value="rejected">
+                        <button type="submit" class="btn btn-outline btn-sm" style="color: var(--color-red-accent);">Reject</button>
+                      </form>
+                    <% } else if (app.status === 'accepted') { %>
+                      <form action="/appointments/<%= app._id %>/status" method="POST" style="display: inline;">
+                        <input type="hidden" name="status" value="completed">
+                        <button type="submit" class="btn btn-accent btn-sm">Complete</button>
+                      </form>
+                    <% } %>
+
+                    <form action="/admin/appointments/<%= app._id %>/delete" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete this appointment record?');" style="display: inline;">
+                      <button type="submit" class="btn btn-outline btn-sm" style="color: var(--color-red-accent); border-color: rgba(143, 45, 45, 0.3); padding: 0.2rem 0.5rem; font-size: 0.72rem;">
+                        🗑️ Delete
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <%- include('../partials/empty-state', { title: 'No Appointments Found', message: 'No appointment logs match your selected filter.', actionUrl: '/admin/dashboard', actionLabel: 'View All Logs' }) %>
+    <% } %>
+  </div>
+
+  <!-- REGISTERED USER ACCOUNTS & DATABASE DELETION MANAGEMENT -->
+  <div class="paper-card" style="padding: 1.5rem;" id="usersSec">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+      <div>
+        <span class="mono-label" style="color: var(--color-red-accent);">Database Management</span>
+        <h3 style="margin: 0.1rem 0;">Registered User Accounts</h3>
+        <p style="font-size: 0.8rem; color: var(--color-soft-ink); margin: 0;">
+          Manage and permanently remove user accounts directly from MongoDB database
+        </p>
+      </div>
+      <span class="badge badge-red"><%= allUsers ? allUsers.length : 0 %> Total Accounts</span>
+    </div>
+
+    <% if (allUsers && allUsers.length > 0) { %>
+      <div class="table-container">
+        <table class="editorial-table">
+          <thead>
+            <tr>
+              <th>User Name</th>
+              <th>Email Address</th>
+              <th>Account Role</th>
+              <th>Registered Date</th>
+              <th style="text-align: right;">Delete Account</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% allUsers.forEach(u => { %>
+              <tr>
+                <td style="font-weight: 600;">
+                  <%= u.name %>
+                  <% if (u.email === 'aaravpathak9984@gmail.com') { %>
+                    <span class="badge badge-red" style="margin-left: 0.4rem; font-size: 0.65rem;">Master Admin</span>
+                  <% } %>
+                </td>
+                <td style="font-family: var(--font-mono); font-size: 0.83rem;"><%= u.email %></td>
+                <td>
+                  <span class="badge <%= u.role === 'admin' ? 'badge-red' : u.role === 'doctor' ? 'badge-yellow' : 'badge-paper' %>">
+                    <%= u.role %>
+                  </span>
+                </td>
+                <td style="font-size: 0.8rem; color: var(--color-soft-ink);">
+                  <%= new Date(u.createdAt).toLocaleDateString() %>
+                </td>
+                <td style="text-align: right;">
+                  <% if (u.email !== 'aaravpathak9984@gmail.com') { %>
+                    <form action="/admin/users/<%= u._id %>/delete" method="POST" onsubmit="return confirm('Are you sure you want to PERMANENTLY delete account <%= u.email %> from MongoDB? All user data will be deleted.');" style="display: inline;">
+                      <button type="submit" class="btn btn-outline btn-sm" style="color: var(--color-red-accent); border-color: rgba(194, 59, 34, 0.4); padding: 0.25rem 0.65rem; font-size: 0.75rem;">
+                        🗑️ Delete Account from DB
+                      </button>
+                    </form>
+                  <% } else { %>
+                    <span style="font-size: 0.75rem; color: var(--color-soft-ink); font-style: italic;">Protected</span>
+                  <% } %>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <p style="font-size: 0.85rem; color: var(--color-soft-ink);">No registered users found in database.</p>
+    <% } %>
+  </div>
+</div>
+
+<!-- Modal Dialog: Register New Doctor -->
+<div id="addDoctorModal" class="modal-backdrop">
+  <div class="modal-card" style="max-width: 600px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+      <div>
+        <span class="mono-label" style="color: var(--color-red-accent);">Clinic Administration</span>
+        <h3 style="margin: 0.1rem 0;">Register New Doctor</h3>
+      </div>
+      <button type="button" data-modal-close style="background: none; border: none; font-size: 1.4rem; cursor: pointer;">&times;</button>
+    </div>
+
+    <form action="/admin/doctors/add" method="POST">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.85rem;">
+        <div class="form-group">
+          <label for="newDocName" class="form-label">Doctor Full Name</label>
+          <input type="text" id="newDocName" name="name" class="form-control" placeholder="Dr. Alex Rivera" required>
+        </div>
+
+        <div class="form-group">
+          <label for="newDocEmail" class="form-label">Email Address</label>
+          <input type="email" id="newDocEmail" name="email" class="form-control" placeholder="alex.rivera@clinic.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="newDocPassword" class="form-label">Account Password</label>
+          <div class="password-input-wrapper">
+            <input type="password" id="newDocPassword" name="password" class="form-control" placeholder="••••••••" required>
+            <button type="button" class="password-toggle-btn" data-target="newDocPassword" onclick="window.togglePasswordVisibility('newDocPassword', this); return false;" title="Show password" aria-label="Show password">👁️</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="newDocSpec" class="form-label">Specialization</label>
+          <select id="newDocSpec" name="specialization" class="form-control" required>
+            <option value="General Medicine">General Medicine</option>
+            <option value="Cardiology">Cardiology</option>
+            <option value="Pediatrics">Pediatrics</option>
+            <option value="Dermatology">Dermatology</option>
+            <option value="Orthopedics">Orthopedics</option>
+            <option value="Neurology">Neurology</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="newDocQual" class="form-label">Qualification</label>
+          <input type="text" id="newDocQual" name="qualification" class="form-control" value="MBBS, MD" required>
+        </div>
+
+        <div class="form-group">
+          <label for="newDocFee" class="form-label">Consultation Fee (₹ INR)</label>
+          <input type="number" id="newDocFee" name="consultationFee" class="form-control" value="600" min="0" required>
+        </div>
+
+        <div class="form-group">
+          <label for="newDocExp" class="form-label">Experience (Years)</label>
+          <input type="number" id="newDocExp" name="experienceYears" class="form-control" value="8" min="0" required>
+        </div>
+
+        <div class="form-group">
+          <label for="newDocStart" class="form-label">Start Time</label>
+          <input type="time" id="newDocStart" name="startTime" class="form-control" value="09:00" required>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
+        <button type="button" class="btn btn-outline btn-sm" data-modal-close>Cancel</button>
+        <button type="submit" class="btn btn-primary btn-sm">Save Doctor Record</button>
+      </div>
+    </form>
+  </div>
+</div>

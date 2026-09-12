@@ -1,0 +1,59 @@
+<div style="max-width: 1000px; margin: 1.5rem auto;">
+  <div class="glass-card sketch-corner d-flex justify-between align-center mb-3" style="padding: 1.25rem 1.5rem;">
+    <div>
+      <span class="mono-label" style="color: var(--color-red-accent);">Patient Portal</span>
+      <h2 style="margin: 0.15rem 0 0;">My Appointment History</h2>
+      <p style="font-size: 0.85rem; color: var(--color-soft-ink); margin: 0;">Track your upcoming and past doctor visits</p>
+    </div>
+    <a href="/doctors" class="btn btn-accent btn-sm">🩺 Book New Appointment</a>
+  </div>
+
+  <% if (appointments && appointments.length > 0) { %>
+    <div class="table-container">
+      <table class="editorial-table">
+        <thead>
+          <tr>
+            <th>Date & Time</th>
+            <th>Doctor</th>
+            <th>Specialization</th>
+            <th>Reason</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% appointments.forEach(app => { %>
+            <tr>
+              <td>
+                <div style="font-family: var(--font-mono); font-size: 0.88rem; font-weight: 600;"><%= app.date %></div>
+                <div class="mono-label" style="font-size: 0.75rem;"><%= app.timeSlot %></div>
+              </td>
+              <td style="font-weight: 500;"><%= app.doctor ? app.doctor.name : 'Doctor Profile' %></td>
+              <td><span class="badge"><%= app.doctor ? app.doctor.specialization : 'Medical' %></span></td>
+              <td style="font-size: 0.82rem; color: var(--color-soft-ink);"><%= app.reason %></td>
+              <td>
+                <span class="badge <%= app.status === 'accepted' ? 'badge-green' : app.status === 'completed' ? 'badge-paper' : app.status === 'pending' ? 'badge-yellow' : 'badge-red' %>">
+                  <%= app.status %>
+                </span>
+              </td>
+              <td>
+                <% if (app.status === 'pending' || app.status === 'accepted') { %>
+                  <form action="/appointments/<%= app._id %>/status" method="POST" onsubmit="return confirm('Are you sure you want to cancel this appointment?');" style="display: inline;">
+                    <input type="hidden" name="status" value="cancelled">
+                    <button type="submit" class="btn btn-outline btn-sm" style="color: var(--color-red-accent); border-color: rgba(143, 45, 45, 0.3);">
+                      Cancel
+                    </button>
+                  </form>
+                <% } else { %>
+                  <span style="font-size: 0.78rem; color: var(--color-soft-ink);">N/A</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  <% } else { %>
+    <%- include('../partials/empty-state', { title: 'No Appointments Found', message: 'You have not booked any appointments yet. Browse our clinic doctors to pick a date and time slot.', actionUrl: '/doctors', actionLabel: 'Browse Clinic Doctors' }) %>
+  <% } %>
+</div>

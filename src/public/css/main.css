@@ -1,0 +1,133 @@
+/* ==========================================================================
+   MAIN DESIGN SYSTEM TOKENS & BASE STYLES
+   Visual Language: macOS Minimalist + Glassmorphism + Editorial Precision
+   ========================================================================== */
+
+:root {
+  /* Color Palette - macOS & Editorial Hybrid */
+  --bg-canvas: #F5F3EF;
+  --bg-white: #FFFFFF;
+  --bg-paper: #EDE8DF;
+  --bg-glass: rgba(255, 255, 255, 0.85);
+  
+  --color-ink: #18181B;
+  --color-soft-ink: #3F3F46;
+  --color-muted: #71717A;
+  
+  --color-red-accent: #8F2D2D;
+  --color-red-dark: #681F22;
+  --color-red-light: rgba(143, 45, 45, 0.08);
+  
+  --color-border: #DED8CD;
+  --color-border-subtle: rgba(216, 208, 194, 0.5);
+
+  /* macOS Window & Glassmorphism Tokens */
+  --glass-bg: rgba(255, 255, 255, 0.82);
+  --glass-border: 1px solid rgba(216, 208, 194, 0.7);
+  --glass-shadow: 0 10px 30px -5px rgba(24, 24, 27, 0.06), 0 4px 12px -2px rgba(24, 24, 27, 0.03);
+  --glass-blur: blur(12px);
+
+  /* Typography */
+  --font-serif: 'Fraunces', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
+  /* Spacing & Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-pill: 9999px;
+  --container-max: 1160px;
+}
+
+/* Reset & Box Sizing */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  /* Subtle macOS noise/dot matrix grid */
+  background-image: radial-gradient(rgba(113, 113, 122, 0.15) 0.75px, transparent 0.75px);
+  background-size: 20px 20px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  color: var(--color-ink);
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+h1 { font-size: 2.6rem; margin-bottom: 0.75rem; }
+h2 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+h3 { font-size: 1.3rem; margin-bottom: 0.4rem; }
+h4 { font-size: 1.1rem; margin-bottom: 0.35rem; }
+
+p {
+  color: var(--color-soft-ink);
+  margin-bottom: 1rem;
+}
+
+a {
+  color: var(--color-ink);
+  text-decoration: none;
+  transition: color 0.15s ease, opacity 0.15s ease;
+}
+
+a:hover {
+  color: var(--color-red-accent);
+}
+
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--color-muted);
+}
+
+/* Page Containers & Layout */
+.app-viewport {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem 1.5rem 3rem;
+  max-width: var(--container-max);
+  width: 100%;
+  margin: 0 auto;
+}
+
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 1.75rem;
+}
+
+@media (max-width: 868px) {
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+}

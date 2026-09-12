@@ -1,0 +1,46 @@
+<header class="app-header glass-card" style="border-radius: 0 0 var(--radius-lg) var(--radius-lg); padding: 0.85rem 1.75rem; margin-bottom: 1.75rem;">
+  <div style="max-width: var(--container-max); margin: 0 auto; display: flex; align-items: center; justify-content: space-between;">
+    
+    <!-- Brand Logo + macOS Window Lights -->
+    <a href="/" class="brand-logo" style="display: flex; align-items: center; gap: 0.75rem;">
+      <div class="macos-window-header" style="margin-bottom: 0;">
+        <span class="macos-dot macos-dot-red"></span>
+        <span class="macos-dot macos-dot-yellow"></span>
+        <span class="macos-dot macos-dot-green"></span>
+      </div>
+      <span style="font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; color: var(--color-ink);"><%= appName %></span>
+      <span class="badge badge-paper" style="font-size: 0.62rem; padding: 0.15rem 0.5rem;">Healthcare</span>
+    </a>
+
+    <!-- Navigation Links -->
+    <nav style="display: flex; align-items: center; gap: 1.25rem;">
+      <a href="/" class="<%= path === '/' ? 'text-accent' : 'text-muted' %>" style="font-size: 0.875rem; font-weight: 500;">Home</a>
+
+      <% if (currentUser) { %>
+        <a href="/dashboard" class="<%= path === '/dashboard' ? 'text-accent' : 'text-muted' %>" style="font-size: 0.875rem; font-weight: 500;">Dashboard</a>
+        
+        <% if (currentUser.role === 'admin') { %>
+          <a href="/admin/dashboard" class="<%= path === '/admin/dashboard' ? 'text-accent' : 'text-muted' %>" style="font-size: 0.875rem; font-weight: 500;">👑 Admin Console</a>
+        <% } else if (currentUser.role === 'doctor') { %>
+          <a href="/appointments/doctor-queue" class="<%= path === '/appointments/doctor-queue' ? 'text-accent' : 'text-muted' %>" style="font-size: 0.875rem; font-weight: 500;">📋 Doctor Queue</a>
+        <% } else { %>
+          <a href="/doctors" class="<%= path === '/doctors' ? 'text-accent' : 'text-muted' %>" style="font-size: 0.875rem; font-weight: 500;">🩺 Browse Doctors</a>
+          <a href="/appointments/my-appointments" class="<%= path === '/appointments/my-appointments' ? 'text-accent' : 'text-muted' %>" style="font-size: 0.875rem; font-weight: 500;">📅 My Appointments</a>
+        <% } %>
+
+        <div style="display: flex; align-items: center; gap: 0.6rem; margin-left: 0.25rem;">
+          <a href="/profile" class="mono-label" style="background: var(--bg-paper); padding: 0.35rem 0.75rem; border-radius: var(--radius-pill); border: 1px solid var(--color-border); font-size: 0.72rem;">
+            👤 <%= currentUser.name %> <span class="badge badge-red" style="font-size: 0.58rem; margin-left: 0.2rem;"><%= currentUser.role %></span>
+          </a>
+          <a href="/logout" class="btn btn-outline btn-sm">Log Out</a>
+        </div>
+      <% } else { %>
+        <a href="/doctors" class="<%= path === '/doctors' ? 'text-accent' : 'text-muted' %>" style="font-size: 0.875rem; font-weight: 500;">🩺 Browse Doctors</a>
+        <div style="display: flex; align-items: center; gap: 0.65rem;">
+          <a href="/login" class="btn btn-outline btn-sm">Log In</a>
+          <a href="/signup" class="btn btn-primary btn-sm">Sign Up</a>
+        </div>
+      <% } %>
+    </nav>
+  </div>
+</header>

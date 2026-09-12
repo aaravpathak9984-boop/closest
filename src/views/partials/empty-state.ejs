@@ -1,0 +1,10 @@
+<div class="empty-state paper-card text-center" style="padding: 3rem 1.5rem; background-color: rgba(255, 255, 255, 0.6); border-style: dashed;">
+  <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">📁</div>
+  <h4 style="margin-bottom: 0.25rem;"><%= title || 'No items found' %></h4>
+  <p style="font-size: 0.85rem; color: var(--color-soft-ink); max-width: 400px; margin: 0 auto 1.25rem;">
+    <%= message || 'There are no records matching your current filter or search criteria.' %>
+  </p>
+  <% if (actionUrl) { %>
+    <a href="<%= actionUrl %>" class="btn btn-secondary btn-sm"><%= actionLabel || 'Reset Filters' %></a>
+  <% } %>
+</div>

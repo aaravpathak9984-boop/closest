@@ -1,0 +1,164 @@
+<div style="max-width: 720px; margin: 1.5rem auto;">
+  <!-- Doctor Summary Top Bar -->
+  <div class="glass-card sketch-corner mb-3" style="padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <span class="badge badge-red mb-1"><%= doctor.specialization %></span>
+      <h2 style="margin: 0.1rem 0;"><%= doctor.name %></h2>
+      <p style="font-size: 0.85rem; color: var(--color-soft-ink); margin: 0;"><%= doctor.qualification %> • Fee: ₹<%= doctor.consultationFee %></p>
+    </div>
+    <a href="/doctors" class="btn btn-outline btn-sm">&larr; Change Doctor</a>
+  </div>
+
+  <!-- DOUBLE BOOKING CONFLICT WARNING + STRETCH GOAL NEXT SLOT RECOMMENDATION -->
+  <% if (conflict) { %>
+    <div class="alert alert-error flex-column align-start" style="padding: 1.25rem; margin-bottom: 1.5rem;">
+      <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 0.95rem;">
+        <span>⛔ Double-Booking Collision Prevented</span>
+      </div>
+      <p style="margin: 0.35rem 0 0.75rem; font-size: 0.88rem; color: var(--color-red-dark);">
+        <%= conflict.message %>
+      </p>
+
+      <% if (suggestedSlot) { %>
+        <div style="width: 100%; padding: 0.85rem; background: var(--bg-white); border: 1px solid var(--color-border); border-radius: 4px; margin-top: 0.25rem;">
+          <div class="mono-label" style="color: #1B5E34; margin-bottom: 0.2rem;">💡 Auto-Suggested Next Available Slot (Stretch Goal)</div>
+          <div style="font-size: 0.9rem; margin-bottom: 0.6rem;">
+            Next open slot: <strong><%= suggestedSlot.date %></strong> at <strong><%= suggestedSlot.timeSlot %></strong>
+          </div>
+          
+          <form action="/appointments/book" method="POST">
+            <input type="hidden" name="doctorId" value="<%= doctor._id %>">
+            <input type="hidden" name="date" value="<%= suggestedSlot.date %>">
+            <input type="hidden" name="timeSlot" value="<%= suggestedSlot.timeSlot %>">
+            <input type="hidden" name="reason" value="General Consultation">
+            <button type="submit" class="btn btn-accent btn-sm">
+              ✨ Book Next Available Slot (<%= suggestedSlot.timeSlot %>) Now
+            </button>
+          </form>
+        </div>
+      <% } %>
+    </div>
+  <% } %>
+
+  <!-- Booking Form -->
+  <div class="paper-card" style="padding: 1.75rem;">
+    <form action="/appointments/book" method="POST" id="bookingForm">
+      <input type="hidden" name="doctorId" value="<%= doctor._id %>">
+      
+      <!-- Date Picker -->
+      <div class="form-group mb-3">
+        <label for="bookingDate" class="form-label">Select Consultation Date</label>
+        <input 
+          type="date" 
+          id="bookingDate" 
+          name="date" 
+          class="form-control" 
+          value="<%= selectedDate %>" 
+          min="<%= new Date().toISOString().split('T')[0] %>"
+          onchange="window.location.href = '?date=' + this.value;"
+          required
+          style="font-family: var(--font-mono);"
+        >
+        <span class="mono-label mt-1" style="font-size: 0.7rem; color: var(--color-soft-ink);">
+          Showing time slot availability for <strong><%= selectedDate %></strong>
+        </span>
+      </div>
+
+      <!-- Time Slot Selection Grid -->
+      <div class="form-group mb-3">
+        <label class="form-label">Select 30-Minute Time Slot</label>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)); gap: 0.6rem; margin-top: 0.35rem;">
+          <% slots.forEach(slot => { %>
+            <label style="position: relative; display: block; cursor: <%= slot.isAvailable ? 'pointer' : 'not-allowed' %>;">
+              <input 
+                type="radio" 
+                name="timeSlot" 
+                value="<%= slot.timeSlot %>" 
+                <%= !slot.isAvailable ? 'disabled' : '' %>
+                required
+                style="position: absolute; opacity: 0;"
+                onclick="document.querySelectorAll('.slot-pill').forEach(p => p.classList.remove('selected')); this.nextElementSibling.classList.add('selected');"
+              >
+              <div 
+                class="slot-pill" 
+                style="
+                  text-align: center; 
+                  padding: 0.5rem 0.25rem; 
+                  border: 1px solid var(--color-border); 
+                  border-radius: 4px; 
+                  font-family: var(--font-mono); 
+                  font-size: 0.82rem; 
+                  background-color: <%= slot.isAvailable ? 'var(--bg-white)' : 'var(--bg-paper)' %>;
+                  color: <%= slot.isAvailable ? 'var(--color-ink)' : 'var(--color-border)' %>;
+                  text-decoration: <%= slot.isAvailable ? 'none' : 'line-through' %>;
+                  transition: all 0.15s ease;
+                "
+              >
+                <%= slot.timeSlot %>
+                <% if (!slot.isAvailable) { %>
+                  <span style="display: block; font-size: 0.62rem; text-decoration: none; color: var(--color-red-accent);">Booked</span>
+                <% } %>
+              </div>
+            </label>
+          <% }); %>
+        </div>
+      </div>
+
+      <!-- Patient Contact & Medical Info -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" class="mb-3">
+        <div class="form-group mb-0">
+          <label for="patientName" class="form-label">Patient Full Name</label>
+          <input 
+            type="text" 
+            id="patientName" 
+            name="patientName" 
+            class="form-control" 
+            placeholder="e.g. Jane Doe"
+            value="<%= currentUser ? currentUser.name : '' %>"
+            required
+          >
+        </div>
+
+        <div class="form-group mb-0">
+          <label for="patientPhone" class="form-label">Patient Contact Phone No.</label>
+          <input 
+            type="tel" 
+            id="patientPhone" 
+            name="patientPhone" 
+            class="form-control" 
+            placeholder="+91 98765 43210"
+            required
+          >
+        </div>
+      </div>
+
+      <!-- Symptoms & Medical Reason -->
+      <div class="form-group mb-3">
+        <label for="symptoms" class="form-label">Symptoms / Reason for Visit</label>
+        <textarea 
+          id="symptoms" 
+          name="symptoms" 
+          class="form-control" 
+          rows="3" 
+          placeholder="Briefly describe your health symptoms, duration, or specific medical concerns..."
+          required
+        ></textarea>
+        <span class="mono-label mt-1" style="font-size: 0.72rem; color: var(--color-soft-ink);">
+          This information will be securely transmitted to Dr. <%= doctor.name %> for pre-consultation review.
+        </span>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 mt-2">
+        Confirm & Book Appointment
+      </button>
+    </form>
+  </div>
+</div>
+
+<style>
+.slot-pill.selected {
+  background-color: var(--color-ink) !important;
+  color: var(--bg-white) !important;
+  border-color: var(--color-ink) !important;
+}
+</style>

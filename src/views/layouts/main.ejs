@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+</head>
+<body>
+  <div class="app-viewport">
+    <%- include('../partials/navbar') %>
+
+    <main class="main-content">
+      <%- include('../partials/flash') %>
+      <%- body %>
+    </main>
+
+    <%- include('../partials/footer') %>
+  </div>
+
+  <!-- Reusable Client Scripts -->
+  <script src="/js/debounce.js"></script>
+  <script src="/js/main.js"></script>
+  <script src="/js/search.js"></script>
+  <script src="/js/filters.js"></script>
+  <script src="/js/sort.js"></script>
+  <script src="/js/modal.js"></script>
+  <script src="/js/toast.js"></script>
+  <script src="/js/validation.js"></script>
+</body>
+</html>

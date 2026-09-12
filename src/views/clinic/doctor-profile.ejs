@@ -1,0 +1,194 @@
+<div style="max-width: 960px; margin: 1.5rem auto;">
+  <!-- Back Button -->
+  <div class="mb-3">
+    <a href="/doctors" class="btn btn-outline btn-sm">&larr; Back to Doctor Directory</a>
+  </div>
+
+  <!-- Doctor Hero Profile Card -->
+  <div class="glass-card sketch-corner mb-3" style="padding: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1.5rem;">
+      <div style="flex: 1; min-width: 280px;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+          <span class="badge badge-red"><%= doctor.specialization %></span>
+          <% if (doctor.isVerified) { %>
+            <span class="badge badge-green">✓ Admin Verified Specialist</span>
+          <% } %>
+        </div>
+        
+        <h1 style="margin: 0.2rem 0 0.4rem; font-size: 2rem;"><%= doctor.name %></h1>
+        <p style="font-size: 0.95rem; color: var(--color-soft-ink); margin: 0 0 0.75rem;">
+          <%= doctor.qualification %> • <strong><%= doctor.experienceYears %> Years Clinical Experience</strong>
+        </p>
+
+        <div style="display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; margin-top: 0.5rem;">
+          <!-- Star Rating Badge -->
+          <div style="display: flex; align-items: center; gap: 0.35rem; font-weight: 700; font-size: 1.1rem; color: #D9822B;">
+            <% if (reviews && reviews.length > 0) { %>
+              <span>⭐ <%= (doctor.averageRating || 5.0).toFixed(1) %></span>
+              <span style="font-size: 0.85rem; color: var(--color-soft-ink); font-weight: 400;">
+                (<%= reviews.length %> patient reviews)
+              </span>
+            <% } else { %>
+              <span>⭐ New Doctor</span>
+              <span style="font-size: 0.85rem; color: var(--color-soft-ink); font-weight: 400;">
+                (0 patient reviews yet)
+              </span>
+            <% } %>
+          </div>
+
+          <!-- Consultation Fee -->
+          <div style="font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; color: var(--color-ink);">
+            ₹<%= doctor.consultationFee %> <span style="font-size: 0.78rem; font-weight: 400; color: var(--color-soft-ink);">/ consultation</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <div style="text-align: right;">
+        <a href="/appointments/book/<%= doctor._id %>" class="btn btn-primary btn-lg" style="padding: 0.85rem 1.75rem; font-size: 1rem;">
+          📅 Book Appointment Now
+        </a>
+        <div class="mono-label mt-2" style="font-size: 0.72rem; color: var(--color-soft-ink);">
+          Working Hours: <%= doctor.workingHours?.start || '09:00' %> - <%= doctor.workingHours?.end || '17:00' %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Clinical Overview & Biography Grid -->
+  <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;" class="mb-4">
+    <!-- Biography -->
+    <div class="paper-card" style="padding: 1.75rem;">
+      <h3 style="margin-top: 0; margin-bottom: 0.75rem;">About & Medical Background</h3>
+      <p style="font-size: 0.92rem; line-height: 1.6; color: var(--color-ink); margin: 0;">
+        <%= doctor.bio %>
+      </p>
+    </div>
+
+    <!-- Practice Details Card -->
+    <div class="paper-card" style="padding: 1.5rem; background: var(--bg-paper);">
+      <h4 style="margin-top: 0; margin-bottom: 0.75rem;">Clinical Details</h4>
+      
+      <div class="mb-2">
+        <div class="mono-label" style="font-size: 0.7rem;">Specialization</div>
+        <div style="font-weight: 600; font-size: 0.9rem;"><%= doctor.specialization %></div>
+      </div>
+
+      <div class="mb-2">
+        <div class="mono-label" style="font-size: 0.7rem;">Qualifications</div>
+        <div style="font-weight: 600; font-size: 0.88rem;"><%= doctor.qualification %></div>
+      </div>
+
+      <div class="mb-2">
+        <div class="mono-label" style="font-size: 0.7rem;">Slot Duration</div>
+        <div style="font-weight: 600; font-size: 0.88rem;"><%= doctor.workingHours?.slotDurationMinutes || 30 %> Minutes</div>
+      </div>
+
+      <div>
+        <div class="mono-label" style="font-size: 0.7rem;">Verification Status</div>
+        <div style="font-weight: 600; font-size: 0.88rem; color: #1B5E34;">✓ Admin Approved Practitioner</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PATIENT REVIEWS & RATINGS SECTION -->
+  <div class="paper-card" style="padding: 2rem;" id="reviewsSection">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h3 style="margin: 0;">Patient Reviews & Clinical Feedback</h3>
+        <p style="font-size: 0.85rem; color: var(--color-soft-ink); margin: 0.2rem 0 0;">
+          Authentic feedback from patients who consulted with <%= doctor.name %>
+        </p>
+      </div>
+
+      <!-- Rating Summary Pill -->
+      <div style="padding: 0.6rem 1.25rem; background: var(--bg-white); border: 1px solid var(--color-border); border-radius: 6px; text-align: center;">
+        <div style="font-size: 1.4rem; font-weight: 800; color: #D9822B;">
+          <%= reviews && reviews.length > 0 ? '⭐ ' + (doctor.averageRating || 5.0).toFixed(1) : '⭐ New' %>
+        </div>
+        <div class="mono-label" style="font-size: 0.68rem;"><%= reviews.length %> Verified Reviews</div>
+      </div>
+    </div>
+
+    <!-- Submit Patient Review Form -->
+    <div style="padding: 1.25rem; background: var(--bg-paper); border: 1px solid var(--color-border); border-radius: 6px; margin-bottom: 2rem;">
+      <h4 style="margin-top: 0; margin-bottom: 0.5rem;">Write a Patient Review</h4>
+      
+      <% if (currentUser) { %>
+        <form action="/doctors/<%= doctor._id %>/reviews" method="POST" id="reviewForm">
+          <div style="display: grid; grid-template-columns: 180px 1fr; gap: 1rem;" class="mb-3">
+            <!-- Star Rating Selection -->
+            <div class="form-group mb-0">
+              <label for="rating" class="form-label">Overall Rating</label>
+              <select id="rating" name="rating" class="form-control" required style="font-family: var(--font-mono);">
+                <option value="5">⭐⭐⭐⭐⭐ (5/5 Excellent)</option>
+                <option value="4">⭐⭐⭐⭐ (4/5 Very Good)</option>
+                <option value="3">⭐⭐⭐ (3/5 Good)</option>
+                <option value="2">⭐⭐ (2/5 Fair)</option>
+                <option value="1">⭐ (1/5 Poor)</option>
+              </select>
+            </div>
+
+            <!-- Review Comment -->
+            <div class="form-group mb-0">
+              <label for="comment" class="form-label">Consultation Feedback</label>
+              <textarea 
+                id="comment" 
+                name="comment" 
+                class="form-control" 
+                rows="2" 
+                placeholder="Share your experience regarding diagnosis clarity, wait time, bedside manner, and clinical care..."
+                required
+              ></textarea>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-secondary btn-sm" style="font-weight: 600;">
+            ✨ Submit Verified Patient Review
+          </button>
+        </form>
+      <% } else { %>
+        <div style="font-size: 0.88rem; color: var(--color-soft-ink);">
+          Please <a href="/login" style="font-weight: 600;">Log in</a> to submit a review for Dr. <%= doctor.name %>.
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Reviews List Feed -->
+    <% if (reviews && reviews.length > 0) { %>
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <% reviews.forEach(rev => { %>
+          <div style="padding: 1.1rem; border: 1px solid var(--color-border); border-radius: 6px; background: var(--bg-white);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <strong style="font-size: 0.95rem;"><%= rev.patientName %></strong>
+                <span class="badge badge-paper" style="font-size: 0.68rem; color: #1B5E34;">✓ Verified Consultation</span>
+              </div>
+
+              <div style="color: #D9822B; font-size: 0.9rem; font-weight: 600;">
+                <% for (let i = 1; i <= 5; i++) { %>
+                  <%= i <= rev.rating ? '★' : '☆' %>
+                <% } %>
+                <span style="font-size: 0.78rem; color: var(--color-soft-ink); font-weight: 400; margin-left: 0.25rem;">
+                  (<%= rev.rating %>/5)
+                </span>
+              </div>
+            </div>
+
+            <p style="font-size: 0.88rem; color: var(--color-ink); margin: 0 0 0.4rem; line-height: 1.5;">
+              "<%= rev.comment %>"
+            </p>
+
+            <div class="mono-label" style="font-size: 0.7rem; color: var(--color-soft-ink);">
+              Reviewed on <%= new Date(rev.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="text-center" style="padding: 2rem; color: var(--color-soft-ink); font-size: 0.9rem;">
+        No patient reviews submitted yet for Dr. <%= doctor.name %>. Be the first patient to share feedback!
+      </div>
+    <% } %>
+  </div>
+</div>

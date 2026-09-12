@@ -1,0 +1,153 @@
+/* ==========================================================================
+   FORM CONTROLS & AUTH INPUT STYLES
+   macOS Inputs, Focus Rings, Interactive Slot Pills, Strength Meter
+   ========================================================================== */
+
+.form-group {
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-ink);
+  margin-bottom: 0.4rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.7rem 0.95rem;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  color: var(--color-ink);
+  background-color: var(--bg-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) inset;
+}
+
+.form-control:focus {
+  border-color: var(--color-ink);
+  box-shadow: 0 0 0 3px rgba(24, 24, 27, 0.08);
+  background-color: var(--bg-white);
+}
+
+.form-control.is-invalid {
+  border-color: var(--color-red-accent);
+  background-color: #FFFDFD;
+}
+
+.invalid-feedback {
+  font-size: 0.78rem;
+  color: var(--color-red-accent);
+  margin-top: 0.35rem;
+  font-weight: 500;
+}
+
+/* Password Input Wrapper & Visibility Toggle Button */
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-input-wrapper .form-control {
+  padding-right: 2.75rem;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 0.5rem;
+  background: transparent;
+  border: none;
+  color: var(--color-soft-ink);
+  cursor: pointer;
+  padding: 0.35rem 0.55rem;
+  font-size: 0.95rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease, background-color 0.15s ease;
+  user-select: none;
+}
+
+.password-toggle-btn:hover {
+  color: var(--color-ink);
+  background-color: rgba(24, 24, 27, 0.05);
+}
+
+/* Slot Selection Pills */
+.slot-pill {
+  text-align: center;
+  padding: 0.6rem 0.4rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  background-color: var(--bg-white);
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.slot-pill:hover:not(.disabled) {
+  border-color: var(--color-ink);
+  transform: translateY(-1px);
+}
+
+.slot-pill.selected {
+  background-color: var(--color-ink) !important;
+  color: var(--bg-white) !important;
+  border-color: var(--color-ink) !important;
+  box-shadow: 0 4px 12px rgba(24, 24, 27, 0.2);
+}
+
+/* Password Strength Meter */
+.strength-meter-container {
+  margin-top: 0.5rem;
+}
+
+.strength-meter-bar {
+  height: 4px;
+  width: 100%;
+  background-color: var(--color-border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 0.35rem;
+}
+
+.strength-meter-fill {
+  height: 100%;
+  width: 0%;
+  transition: width 0.25s ease, background-color 0.25s ease;
+}
+
+.strength-meter-fill.weak { width: 25%; background-color: var(--color-red-accent); }
+.strength-meter-fill.fair { width: 50%; background-color: #D9822B; }
+.strength-meter-fill.good { width: 75%; background-color: #2D8F6F; }
+.strength-meter-fill.strong { width: 100%; background-color: #1B5E34; }
+
+.strength-label-text {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--color-muted);
+  display: flex;
+  justify-content: space-between;
+}
+
+.strength-feedback-list {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  margin-top: 0.3rem;
+  padding-left: 1.1rem;
+}

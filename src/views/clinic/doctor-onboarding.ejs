@@ -1,0 +1,165 @@
+<div style="max-width: 680px; margin: 2rem auto;">
+  <div class="glass-card sketch-corner mb-3" style="padding: 1.5rem 2rem;">
+    <div style="margin-bottom: 1.25rem;">
+      <span class="badge badge-yellow mb-1">Doctor Portal Onboarding</span>
+      <h2 style="margin: 0.2rem 0 0.4rem;">Clinical Profile & Verification Setup</h2>
+      <p style="font-size: 0.88rem; color: var(--color-soft-ink); margin: 0;">
+        Submit your professional medical details for verification by Master Admin (<strong>aaravpathak9984@gmail.com</strong>).
+      </p>
+    </div>
+
+    <% if (doctor && doctor.verificationStatus === 'pending') { %>
+      <div class="alert alert-info mb-3" style="font-size: 0.85rem;">
+        <span>⏳ <strong>Status: Application Under Review</strong> — Your clinical application is pending admin approval. You may update your details below at any time.</span>
+      </div>
+    <% } else if (doctor && doctor.verificationStatus === 'rejected') { %>
+      <div class="alert alert-error mb-3" style="font-size: 0.85rem;">
+        <span>⚠️ <strong>Status: Application Rejected</strong> — Please update your qualifications and resubmit for re-verification.</span>
+      </div>
+    <% } %>
+
+    <form action="/appointments/doctor-onboarding" method="POST" id="onboardingForm">
+      <!-- Full Name & Email -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" class="mb-3">
+        <div class="form-group mb-0">
+          <label for="name" class="form-label">Full Doctor Name</label>
+          <input 
+            type="text" 
+            id="name" 
+            name="name" 
+            class="form-control" 
+            value="<%= doctor && doctor.name ? doctor.name : (currentUser ? currentUser.name : '') %>" 
+            required
+          >
+        </div>
+
+        <div class="form-group mb-0">
+          <label for="email" class="form-label">Email Address (Account ID)</label>
+          <input 
+            type="email" 
+            id="email" 
+            class="form-control" 
+            value="<%= currentUser ? currentUser.email : '' %>" 
+            disabled 
+            style="background-color: var(--bg-paper);"
+          >
+        </div>
+      </div>
+
+      <!-- Specialization & Qualification -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" class="mb-3">
+        <div class="form-group mb-0">
+          <label for="specialization" class="form-label">Specialization</label>
+          <select id="specialization" name="specialization" class="form-control" required>
+            <option value="General Medicine" <%= doctor && doctor.specialization === 'General Medicine' ? 'selected' : '' %>>General Medicine</option>
+            <option value="Cardiology" <%= doctor && doctor.specialization === 'Cardiology' ? 'selected' : '' %>>Cardiology</option>
+            <option value="Pediatrics" <%= doctor && doctor.specialization === 'Pediatrics' ? 'selected' : '' %>>Pediatrics</option>
+            <option value="Dermatology" <%= doctor && doctor.specialization === 'Dermatology' ? 'selected' : '' %>>Dermatology</option>
+            <option value="Orthopedics" <%= doctor && doctor.specialization === 'Orthopedics' ? 'selected' : '' %>>Orthopedics</option>
+            <option value="Neurology" <%= doctor && doctor.specialization === 'Neurology' ? 'selected' : '' %>>Neurology</option>
+            <option value="Gynecology" <%= doctor && doctor.specialization === 'Gynecology' ? 'selected' : '' %>>Gynecology</option>
+            <option value="ENT Specialist" <%= doctor && doctor.specialization === 'ENT Specialist' ? 'selected' : '' %>>ENT Specialist</option>
+            <option value="Psychiatry" <%= doctor && doctor.specialization === 'Psychiatry' ? 'selected' : '' %>>Psychiatry</option>
+          </select>
+        </div>
+
+        <div class="form-group mb-0">
+          <label for="qualification" class="form-label">Medical Qualification</label>
+          <input 
+            type="text" 
+            id="qualification" 
+            name="qualification" 
+            class="form-control" 
+            placeholder="e.g. MBBS, MD (Cardiology)"
+            value="<%= doctor && doctor.qualification ? doctor.qualification : 'MBBS, MD' %>"
+            required
+          >
+        </div>
+      </div>
+
+      <!-- Fee & Experience -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" class="mb-3">
+        <div class="form-group mb-0">
+          <label for="consultationFee" class="form-label">Consultation Fee (₹ INR)</label>
+          <input 
+            type="number" 
+            id="consultationFee" 
+            name="consultationFee" 
+            class="form-control" 
+            placeholder="500"
+            min="100" 
+            max="10000" 
+            value="<%= doctor && doctor.consultationFee ? doctor.consultationFee : 500 %>"
+            required
+          >
+        </div>
+
+        <div class="form-group mb-0">
+          <label for="experienceYears" class="form-label">Years of Clinical Experience</label>
+          <input 
+            type="number" 
+            id="experienceYears" 
+            name="experienceYears" 
+            class="form-control" 
+            placeholder="5"
+            min="0" 
+            max="60" 
+            value="<%= doctor && doctor.experienceYears ? doctor.experienceYears : 5 %>"
+            required
+          >
+        </div>
+      </div>
+
+      <!-- Working Hours -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" class="mb-3">
+        <div class="form-group mb-0">
+          <label for="startTime" class="form-label">Daily Shift Start Time</label>
+          <input 
+            type="time" 
+            id="startTime" 
+            name="startTime" 
+            class="form-control" 
+            value="<%= doctor && doctor.workingHours ? doctor.workingHours.start : '09:00' %>" 
+            required
+            style="font-family: var(--font-mono);"
+          >
+        </div>
+
+        <div class="form-group mb-0">
+          <label for="endTime" class="form-label">Daily Shift End Time</label>
+          <input 
+            type="time" 
+            id="endTime" 
+            name="endTime" 
+            class="form-control" 
+            value="<%= doctor && doctor.workingHours ? doctor.workingHours.end : '17:00' %>" 
+            required
+            style="font-family: var(--font-mono);"
+          >
+        </div>
+      </div>
+
+      <!-- Professional Bio & Medical License -->
+      <div class="form-group mb-3">
+        <label for="bio" class="form-label">Professional Bio & Medical Registration Info</label>
+        <textarea 
+          id="bio" 
+          name="bio" 
+          class="form-control" 
+          rows="3" 
+          placeholder="Describe your medical background, certifications, and clinical expertise..."
+          required
+        ><%= doctor && doctor.bio ? doctor.bio : '' %></textarea>
+      </div>
+
+      <div style="display: flex; gap: 1rem; align-items: center; margin-top: 1.5rem;">
+        <button type="submit" class="btn btn-primary" style="flex: 1;">
+          ✨ Submit Application for Admin Verification
+        </button>
+        <% if (doctor) { %>
+          <a href="/appointments/doctor-queue" class="btn btn-outline">Cancel</a>
+        <% } %>
+      </div>
+    </form>
+  </div>
+</div>

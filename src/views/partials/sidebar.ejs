@@ -1,0 +1,46 @@
+<aside class="dashboard-sidebar paper-card" style="padding: 1.25rem; height: fit-content;">
+  <div class="mono-label mb-2" style="font-size: 0.7rem; letter-spacing: 0.08em;">Clinic Navigation</div>
+  <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.4rem;">
+    <li>
+      <a href="/dashboard" class="btn btn-outline w-100 justify-between <%= path === '/dashboard' ? 'btn-primary' : '' %>" style="padding: 0.55rem 0.85rem; font-size: 0.825rem;">
+        <span>📊 Overview</span>
+      </a>
+    </li>
+    <% if (currentUser && currentUser.role === 'admin') { %>
+      <li>
+        <a href="/admin/dashboard" class="btn btn-outline w-100 justify-between <%= path === '/admin/dashboard' ? 'btn-primary' : '' %>" style="padding: 0.55rem 0.85rem; font-size: 0.825rem;">
+          <span>👑 Admin Console</span>
+        </a>
+      </li>
+    <% } else if (currentUser && currentUser.role === 'doctor') { %>
+      <li>
+        <a href="/appointments/doctor-queue" class="btn btn-outline w-100 justify-between <%= path === '/appointments/doctor-queue' ? 'btn-primary' : '' %>" style="padding: 0.55rem 0.85rem; font-size: 0.825rem;">
+          <span>📋 Doctor Queue</span>
+        </a>
+      </li>
+    <% } else { %>
+      <li>
+        <a href="/doctors" class="btn btn-outline w-100 justify-between <%= path === '/doctors' ? 'btn-primary' : '' %>" style="padding: 0.55rem 0.85rem; font-size: 0.825rem;">
+          <span>🩺 Browse Doctors</span>
+        </a>
+      </li>
+      <li>
+        <a href="/appointments/my-appointments" class="btn btn-outline w-100 justify-between <%= path === '/appointments/my-appointments' ? 'btn-primary' : '' %>" style="padding: 0.55rem 0.85rem; font-size: 0.825rem;">
+          <span>📅 My Appointments</span>
+        </a>
+      </li>
+    <% } %>
+    <li>
+      <a href="/profile" class="btn btn-outline w-100 justify-between <%= path === '/profile' ? 'btn-primary' : '' %>" style="padding: 0.55rem 0.85rem; font-size: 0.825rem;">
+        <span>👤 User Profile</span>
+      </a>
+    </li>
+  </ul>
+
+  <hr class="paper-rule">
+
+  <div class="mono-label mb-2" style="font-size: 0.7rem;">System Info</div>
+  <p style="font-size: 0.78rem; color: var(--color-soft-ink); line-height: 1.4; margin: 0;">
+    Healthcare Domain: Clinic Appointment System with auto-suggest collision prevention.
+  </p>
+</aside>

@@ -1,0 +1,122 @@
+<div style="max-width: 480px; margin: 2rem auto;">
+  <div class="glass-card sketch-corner">
+    <div style="margin-bottom: 1.5rem; text-align: center;">
+      <span class="mono-label">Registration</span>
+      <h2 style="margin-top: 0.25rem;">Create Account</h2>
+      <p style="font-size: 0.85rem; color: var(--color-soft-ink);">Set up your user account to access protected features</p>
+    </div>
+
+    <form action="/signup" method="POST" id="signupForm">
+      <div class="form-group">
+        <label for="name" class="form-label">Full Name</label>
+        <input 
+          type="text" 
+          id="name" 
+          name="name" 
+          class="form-control <%= errors && errors.name ? 'is-invalid' : '' %>" 
+          placeholder="Jane Doe"
+          value="<%= values && values.name ? values.name : '' %>"
+          required
+        >
+        <% if (errors && errors.name) { %>
+          <div class="invalid-feedback"><%= errors.name %></div>
+        <% } %>
+      </div>
+
+      <div class="form-group">
+        <label for="email" class="form-label">Email Address</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          class="form-control <%= errors && errors.email ? 'is-invalid' : '' %>" 
+          placeholder="name@example.com"
+          value="<%= values && values.email ? values.email : '' %>"
+          required
+        >
+        <% if (errors && errors.email) { %>
+          <div class="invalid-feedback"><%= errors.email %></div>
+        <% } %>
+      </div>
+
+      <div class="form-group">
+        <label for="role" class="form-label">Account Role</label>
+        <select id="role" name="role" class="form-control" onchange="document.getElementById('specGroup').style.display = this.value === 'doctor' ? 'block' : 'none';">
+          <option value="patient" <%= values && values.role === 'patient' ? 'selected' : '' %>>Patient (Book Appointments)</option>
+          <option value="doctor" <%= values && values.role === 'doctor' ? 'selected' : '' %>>Doctor / Clinic Provider (Manage Queue)</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="specGroup" style="display: <%= values && values.role === 'doctor' ? 'block' : 'none' %>;">
+        <label for="specialization" class="form-label">Doctor Specialization</label>
+        <input 
+          type="text" 
+          id="specialization" 
+          name="specialization" 
+          class="form-control" 
+          placeholder="e.g. Cardiology, General Medicine, Pediatrics"
+          value="<%= values && values.specialization ? values.specialization : 'General Medicine' %>"
+        >
+      </div>
+
+      <div class="form-group">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+          <label for="password" class="form-label" style="margin-bottom: 0;">Password</label>
+          <button type="button" id="generatePasswordBtn" class="btn-inline-action">⚡ Generate Strong</button>
+        </div>
+        <div class="password-input-wrapper">
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            class="form-control <%= errors && errors.password ? 'is-invalid' : '' %>" 
+            placeholder="At least 8 characters"
+            required
+          >
+          <button type="button" class="password-toggle-btn" data-target="password" title="Show password" aria-label="Show password">👁️</button>
+        </div>
+        <% if (errors && errors.password) { %>
+          <div class="invalid-feedback"><%= errors.password %></div>
+        <% } %>
+
+        <!-- Real-Time Password Strength Indicator -->
+        <div class="strength-meter-container">
+          <div class="strength-meter-bar">
+            <div id="strengthMeterFill" class="strength-meter-fill"></div>
+          </div>
+          <div id="strengthLabelText" class="strength-label-text">
+            <span>Password Strength</span>
+            <span>0/5</span>
+          </div>
+          <ul id="strengthFeedbackList" class="strength-feedback-list"></ul>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword" class="form-label">Confirm Password</label>
+        <div class="password-input-wrapper">
+          <input 
+            type="password" 
+            id="confirmPassword" 
+            name="confirmPassword" 
+            class="form-control <%= errors && errors.confirmPassword ? 'is-invalid' : '' %>" 
+            placeholder="Re-enter password"
+            required
+          >
+          <button type="button" class="password-toggle-btn" data-target="confirmPassword" title="Show password" aria-label="Show password">👁️</button>
+        </div>
+        <% if (errors && errors.confirmPassword) { %>
+          <div class="invalid-feedback"><%= errors.confirmPassword %></div>
+        <% } %>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 mt-2">Create Account</button>
+    </form>
+
+    <hr class="paper-rule">
+
+    <div class="text-center" style="font-size: 0.85rem; color: var(--color-soft-ink);">
+      Already have an account? <a href="/login" style="font-weight: 600;">Log in here</a>
+    </div>
+  </div>
+</div>

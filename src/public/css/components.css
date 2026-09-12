@@ -1,0 +1,305 @@
+/* ==========================================================================
+   REUSABLE UI COMPONENTS
+   macOS Buttons, Soft Glass Cards, Status Pills, Tables, Modal & Toast
+   ========================================================================== */
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-primary {
+  background-color: var(--color-ink);
+  color: var(--bg-white);
+  border-color: var(--color-ink);
+}
+
+.btn-primary:hover {
+  background-color: #27272A;
+  color: var(--bg-white);
+}
+
+.btn-accent {
+  background-color: var(--color-red-accent);
+  color: var(--bg-white);
+  border-color: var(--color-red-accent);
+}
+
+.btn-accent:hover {
+  background-color: var(--color-red-dark);
+  color: var(--bg-white);
+}
+
+.btn-secondary {
+  background-color: var(--bg-paper);
+  color: var(--color-ink);
+  border-color: var(--color-border);
+}
+
+.btn-secondary:hover {
+  background-color: #E2DBD0;
+}
+
+.btn-outline {
+  background-color: var(--bg-white);
+  color: var(--color-ink);
+  border-color: var(--color-border);
+}
+
+.btn-outline:hover {
+  border-color: var(--color-ink);
+  background-color: var(--bg-white);
+}
+
+.btn-sm {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  border-radius: var(--radius-sm);
+}
+
+.btn-lg {
+  padding: 0.75rem 1.6rem;
+  font-size: 0.95rem;
+  border-radius: var(--radius-md);
+}
+
+/* Glass Cards & Paper Surfaces */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.paper-card {
+  background-color: var(--bg-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: 0 4px 16px -4px rgba(24, 24, 27, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.paper-card:hover {
+  box-shadow: 0 8px 24px -6px rgba(24, 24, 27, 0.08);
+}
+
+/* macOS Top Traffic Lights Decorative Control */
+.macos-window-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 1rem;
+}
+
+.macos-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.macos-dot-red { background-color: #FF5F56; border: 1px solid #E0443E; }
+.macos-dot-yellow { background-color: #FFBD2E; border: 1px solid #DEA123; }
+.macos-dot-green { background-color: #27C93F; border: 1px solid #1AAB29; }
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.65rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border);
+  background-color: var(--bg-paper);
+  color: var(--color-soft-ink);
+}
+
+.badge-red {
+  background-color: rgba(143, 45, 45, 0.08);
+  color: var(--color-red-accent);
+  border-color: rgba(143, 45, 45, 0.2);
+}
+
+.badge-green {
+  background-color: rgba(34, 117, 68, 0.08);
+  color: #1B5E34;
+  border-color: rgba(34, 117, 68, 0.2);
+}
+
+.badge-yellow {
+  background-color: rgba(184, 118, 20, 0.08);
+  color: #8C550A;
+  border-color: rgba(184, 118, 20, 0.2);
+}
+
+/* Alerts */
+.alert {
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  margin-bottom: 1.25rem;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.alert-error {
+  background-color: #FDF4F4;
+  border-color: rgba(143, 45, 45, 0.25);
+  color: var(--color-red-dark);
+}
+
+.alert-success {
+  background-color: #F2F9F4;
+  border-color: rgba(34, 117, 68, 0.25);
+  color: #154D2B;
+}
+
+.alert-info {
+  background-color: #F4F6FB;
+  border-color: rgba(50, 75, 120, 0.2);
+  color: #1A3258;
+}
+
+/* Editorial Data Table */
+.table-container {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--bg-white);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.editorial-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.editorial-table th {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-muted);
+  background-color: var(--bg-paper);
+  padding: 0.85rem 1.1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.editorial-table td {
+  padding: 0.95rem 1.1rem;
+  border-bottom: 1px solid var(--color-border-subtle);
+  color: var(--color-ink);
+}
+
+.editorial-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.editorial-table tbody tr:hover {
+  background-color: rgba(237, 232, 223, 0.35);
+}
+
+/* Modal Overlay & macOS Window */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(24, 24, 27, 0.35);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.modal-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-card {
+  background: var(--bg-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  max-width: 500px;
+  width: 90%;
+  padding: 1.75rem;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2);
+  transform: scale(0.95);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-backdrop.active .modal-card {
+  transform: scale(1);
+}
+
+/* Toast Notification */
+.toast-container {
+  position: fixed;
+  bottom: 1.75rem;
+  right: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 1100;
+}
+
+.toast {
+  background: var(--color-ink);
+  color: var(--bg-white);
+  padding: 0.8rem 1.35rem;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  animation: slideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}

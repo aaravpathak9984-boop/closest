@@ -1,0 +1,22 @@
+<% if (flash) { %>
+  <% if (flash.error) { %>
+    <div class="alert alert-error">
+      <span>⚠️ <%= flash.error %></span>
+      <button type="button" data-dismiss="alert" style="background: none; border: none; font-size: 1.1rem; cursor: pointer; color: inherit;">&times;</button>
+    </div>
+  <% } %>
+
+  <% if (flash.success) { %>
+    <div class="alert alert-success">
+      <span>✓ <%= flash.success %></span>
+      <button type="button" data-dismiss="alert" style="background: none; border: none; font-size: 1.1rem; cursor: pointer; color: inherit;">&times;</button>
+    </div>
+  <% } %>
+
+  <% if (flash.info) { %>
+    <div class="alert alert-info">
+      <span>ℹ️ <%= flash.info %></span>
+      <button type="button" data-dismiss="alert" style="background: none; border: none; font-size: 1.1rem; cursor: pointer; color: inherit;">&times;</button>
+    </div>
+  <% } %>
+<% } %>

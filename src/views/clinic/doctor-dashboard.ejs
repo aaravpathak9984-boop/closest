@@ -1,0 +1,225 @@
+<div style="max-width: 1120px; margin: 1.5rem auto;">
+  <!-- Doctor Verification Status Banner -->
+  <% if (doctor && doctor.verificationStatus === 'pending') { %>
+    <div class="glass-card sketch-corner mb-3" style="padding: 1.25rem 1.75rem; border-left: 4px solid #D9822B; background: #FFFDF8;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <span class="badge badge-yellow mb-1">⏳ Verification Pending Admin Review</span>
+          <h3 style="margin: 0.1rem 0;">Doctor Application Submitted</h3>
+          <p style="font-size: 0.88rem; color: var(--color-soft-ink); margin: 0;">
+            Your clinical profile for <strong>Dr. <%= doctor.name %></strong> (<%= doctor.specialization %>) is pending verification by Master Admin (<strong>aaravpathak9984@gmail.com</strong>).
+          </p>
+        </div>
+        <a href="/appointments/doctor-onboarding" class="btn btn-outline btn-sm">✏️ Edit Application Details</a>
+      </div>
+    </div>
+  <% } else if (doctor && doctor.verificationStatus === 'rejected') { %>
+    <div class="glass-card sketch-corner mb-3" style="padding: 1.25rem 1.75rem; border-left: 4px solid var(--color-red-accent); background: #FFFDFD;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <span class="badge badge-red mb-1">❌ Verification Rejected</span>
+          <h3 style="margin: 0.1rem 0;">Application Requires Revision</h3>
+          <p style="font-size: 0.88rem; color: var(--color-red-accent); margin: 0;">
+            Master Admin requested revisions for your doctor application. Please update your details and resubmit.
+          </p>
+        </div>
+        <a href="/appointments/doctor-onboarding" class="btn btn-primary btn-sm">✏️ Update & Resubmit Application</a>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- Doctor Header Bar -->
+  <div class="glass-card sketch-corner mb-3" style="padding: 1.5rem 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.2rem;">
+          <span class="mono-label" style="color: var(--color-red-accent);">Doctor / Provider Portal</span>
+          <% if (doctor && doctor.isVerified) { %>
+            <span class="badge badge-green">✓ Verified Practitioner</span>
+          <% } else { %>
+            <span class="badge badge-yellow">⏳ Pending Admin Verification</span>
+          <% } %>
+        </div>
+        <h2 style="margin: 0.15rem 0 0.25rem;"><%= doctor.name %> Clinical Workspace</h2>
+        <p style="font-size: 0.88rem; color: var(--color-soft-ink); margin: 0;">
+          Specialization: <strong><%= doctor.specialization %></strong> • Qualification: <strong><%= doctor.qualification %></strong> • Fee: ₹<%= doctor.consultationFee %>
+        </p>
+      </div>
+
+      <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
+        <a href="/appointments/doctor-onboarding" class="btn btn-outline btn-sm">✏️ Edit Practice Settings</a>
+        <a href="/profile" class="btn btn-secondary btn-sm">👤 Doctor Profile</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- PATIENT VOLUME & CLINICAL METRICS CARDS -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+    <div class="paper-card" style="padding: 1.25rem;">
+      <span class="mono-label" style="font-size: 0.68rem;">Total Unique Patients</span>
+      <div style="font-family: var(--font-serif); font-size: 2.1rem; font-weight: 700; color: var(--color-ink); margin-top: 0.2rem;">
+        <%= metrics ? metrics.totalPatients : 0 %>
+      </div>
+      <span style="font-size: 0.75rem; color: var(--color-soft-ink);">Distinct Registered Patients</span>
+    </div>
+
+    <div class="paper-card" style="padding: 1.25rem;">
+      <span class="mono-label" style="font-size: 0.68rem;">
+        <%= selectedDate ? 'Patients on ' + selectedDate : 'Total Consultations' %>
+      </span>
+      <div style="font-family: var(--font-serif); font-size: 2.1rem; font-weight: 700; color: var(--color-red-accent); margin-top: 0.2rem;">
+        <%= metrics ? metrics.selectedDatePatientCount : appointments.length %>
+      </div>
+      <span style="font-size: 0.75rem; color: var(--color-soft-ink);">
+        <%= selectedDate ? 'Filtered by Selected Calendar Date' : 'All Scheduled Appointments' %>
+      </span>
+    </div>
+
+    <div class="paper-card" style="padding: 1.25rem;">
+      <span class="mono-label" style="font-size: 0.68rem;">Pending Action</span>
+      <div style="font-family: var(--font-serif); font-size: 2.1rem; font-weight: 700; color: #D9822B; margin-top: 0.2rem;">
+        <%= metrics ? metrics.pendingCount : 0 %>
+      </div>
+      <span style="font-size: 0.75rem; color: var(--color-soft-ink);">Requires Accept / Reject</span>
+    </div>
+
+    <div class="paper-card" style="padding: 1.25rem;">
+      <span class="mono-label" style="font-size: 0.68rem;">Accepted Visits</span>
+      <div style="font-family: var(--font-serif); font-size: 2.1rem; font-weight: 700; color: #1B5E34; margin-top: 0.2rem;">
+        <%= metrics ? metrics.acceptedCount : 0 %>
+      </div>
+      <span style="font-size: 0.75rem; color: var(--color-soft-ink);">Confirmed Consultations</span>
+    </div>
+  </div>
+
+  <!-- CALENDAR DATE FILTER & QUEUE TOOLBAR -->
+  <div class="paper-card mb-4" style="padding: 1.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.25rem;">
+      <div>
+        <h3 style="margin: 0;">Patient Consultation Queue</h3>
+        <p style="font-size: 0.82rem; color: var(--color-soft-ink); margin: 0.2rem 0 0;">
+          Select a date using the calendar picker to view scheduled patients for that date
+        </p>
+      </div>
+
+      <!-- Combined Filter & Calendar Form -->
+      <form action="/appointments/doctor-queue" method="GET" style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+        <!-- Calendar Datepicker -->
+        <div style="display: flex; align-items: center; gap: 0.4rem;">
+          <label for="calendarDatePicker" class="mono-label" style="font-size: 0.7rem;">📅 Date:</label>
+          <input 
+            type="date" 
+            id="calendarDatePicker" 
+            name="date" 
+            value="<%= selectedDate || '' %>" 
+            class="form-control form-control-sm" 
+            style="width: 155px; font-family: var(--font-mono); font-size: 0.82rem;"
+            onchange="this.form.submit()"
+          >
+        </div>
+
+        <!-- Status Filter -->
+        <select name="status" class="form-control form-control-sm" onchange="this.form.submit()" style="width: 140px; font-size: 0.82rem;">
+          <option value="">All Statuses</option>
+          <option value="pending" <%= selectedStatus === 'pending' ? 'selected' : '' %>>Pending</option>
+          <option value="accepted" <%= selectedStatus === 'accepted' ? 'selected' : '' %>>Accepted</option>
+          <option value="completed" <%= selectedStatus === 'completed' ? 'selected' : '' %>>Completed</option>
+          <option value="rejected" <%= selectedStatus === 'rejected' ? 'selected' : '' %>>Rejected</option>
+        </select>
+
+        <!-- Sorting -->
+        <select name="sortBy" class="form-control form-control-sm" onchange="this.form.submit()" style="width: 175px; font-size: 0.82rem; font-family: var(--font-mono);">
+          <option value="time_asc" <%= sortBy === 'time_asc' ? 'selected' : '' %>>Earliest Slot (09:00 → 17:00)</option>
+          <option value="time_desc" <%= sortBy === 'time_desc' ? 'selected' : '' %>>Latest Slot (17:00 → 09:00)</option>
+          <option value="date_desc" <%= sortBy === 'date_desc' ? 'selected' : '' %>>Newest Dates First</option>
+        </select>
+
+        <% if (selectedDate || selectedStatus) { %>
+          <a href="/appointments/doctor-queue" class="btn btn-outline btn-sm">Clear Filter</a>
+        <% } %>
+      </form>
+    </div>
+
+    <!-- Active Filter Notice Banner -->
+    <% if (selectedDate) { %>
+      <div style="margin-top: 1rem; padding: 0.6rem 1rem; background: var(--bg-paper); border: 1px solid var(--color-border); border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 0.83rem; color: var(--color-ink);">
+          📅 Showing patients for date: <strong><%= selectedDate %></strong> (<%= appointments.length %> appointment<%= appointments.length === 1 ? '' : 's' %> found)
+        </span>
+        <a href="/appointments/doctor-queue?status=<%= selectedStatus %>&sortBy=<%= sortBy %>" style="font-size: 0.78rem; color: var(--color-red-accent); text-decoration: underline;">
+          View All Dates
+        </a>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Appointments Queue Table -->
+  <% if (appointments && appointments.length > 0) { %>
+    <div class="table-container">
+      <table class="editorial-table">
+        <thead>
+          <tr>
+            <th>Date & Time Slot</th>
+            <th>Patient Name</th>
+            <th>Contact Phone / Email</th>
+            <th>Symptoms & Reason</th>
+            <th>Status</th>
+            <th style="text-align: right;">Doctor Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% appointments.forEach(app => { %>
+            <tr>
+              <td>
+                <div style="font-family: var(--font-mono); font-size: 0.9rem; font-weight: 600;"><%= app.date %></div>
+                <div class="mono-label" style="font-size: 0.78rem; color: var(--color-red-accent);">🕒 <%= app.timeSlot %></div>
+              </td>
+              <td style="font-weight: 600;">
+                <%= app.patientName || (app.patient ? app.patient.name : 'Patient') %>
+              </td>
+              <td>
+                <div style="font-size: 0.85rem; font-weight: 500;">📞 <%= app.patientPhone || 'N/A' %></div>
+                <div style="font-size: 0.78rem; color: var(--color-soft-ink);"><%= app.patient ? app.patient.email : '' %></div>
+              </td>
+              <td style="font-size: 0.85rem; max-width: 240px;">
+                <div style="font-weight: 500; color: var(--color-ink);"><%= app.symptoms || app.reason %></div>
+              </td>
+              <td>
+                <span class="badge <%= app.status === 'accepted' ? 'badge-green' : app.status === 'completed' ? 'badge-paper' : app.status === 'pending' ? 'badge-yellow' : 'badge-red' %>">
+                  <%= app.status === 'accepted' ? 'Accepted' : app.status === 'pending' ? 'Pending Request' : app.status %>
+                </span>
+              </td>
+              <td style="text-align: right;">
+                <div style="display: flex; gap: 0.35rem; justify-content: flex-end;">
+                  <% if (app.status === 'pending') { %>
+                    <form action="/appointments/<%= app._id %>/status" method="POST" style="display: inline;">
+                      <input type="hidden" name="status" value="accepted">
+                      <button type="submit" class="btn btn-secondary btn-sm" style="color: #1B5E34; font-weight: 600;">
+                        ✓ Accept Request
+                      </button>
+                    </form>
+                    <form action="/appointments/<%= app._id %>/status" method="POST" style="display: inline;">
+                      <input type="hidden" name="status" value="rejected">
+                      <button type="submit" class="btn btn-outline btn-sm" style="color: var(--color-red-accent); font-weight: 600;">
+                        ✗ Reject Request
+                      </button>
+                    </form>
+                  <% } else if (app.status === 'accepted') { %>
+                    <form action="/appointments/<%= app._id %>/status" method="POST" style="display: inline;">
+                      <input type="hidden" name="status" value="completed">
+                      <button type="submit" class="btn btn-accent btn-sm">Mark Completed</button>
+                    </form>
+                  <% } else { %>
+                    <span style="font-size: 0.78rem; color: var(--color-soft-ink);">Archived</span>
+                  <% } %>
+                </div>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  <% } else { %>
+    <%- include('../partials/empty-state', { title: 'No Appointments Found', message: selectedDate ? 'No patient appointments scheduled for date ' + selectedDate + '.' : 'There are currently no patient appointment requests matching the selected filter.', actionUrl: '/appointments/doctor-queue', actionLabel: 'View All Appointments' }) %>
+  <% } %>
+</div>

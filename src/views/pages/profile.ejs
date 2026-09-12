@@ -1,0 +1,178 @@
+<div style="max-width: 900px; margin: 1.5rem auto;">
+  <% if (user && (user.role === 'doctor' || user.role === 'admin')) { %>
+    <!-- DOCTOR / ADMIN PRACTICE PROFILE & SETTINGS PORTAL -->
+    <div class="glass-card sketch-corner mb-3">
+      <div class="macos-window-header">
+        <span class="macos-dot macos-dot-red"></span>
+        <span class="macos-dot macos-dot-yellow"></span>
+        <span class="macos-dot macos-dot-green"></span>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+        <div>
+          <span class="mono-label" style="color: var(--color-red-accent);">Doctor & Practice Management</span>
+          <h2 style="margin: 0.15rem 0;"><%= doctor ? doctor.name : user.name %></h2>
+          <p style="font-size: 0.88rem; color: var(--color-soft-ink); margin: 0;">
+            Role: <span class="badge badge-red"><%= user.role %></span> • Email: <%= user.email %>
+          </p>
+        </div>
+
+        <a href="/appointments/doctor-queue" class="btn btn-accent btn-sm">📋 Open Doctor Queue &rarr;</a>
+      </div>
+
+      <% if (doctor && doctor.verificationStatus === 'pending') { %>
+        <div class="glass-card sketch-corner mb-3" style="padding: 1rem 1.25rem; border-left: 4px solid #D9822B; background: #FFFDF8;">
+          <span class="badge badge-yellow mb-1">⏳ Verification Status: Pending Admin Review</span>
+          <p style="font-size: 0.85rem; color: var(--color-soft-ink); margin: 0;">
+            Your clinical doctor application is undergoing review by Master Admin (<strong>aaravpathak9984@gmail.com</strong>).
+          </p>
+        </div>
+      <% } else if (doctor && doctor.verificationStatus === 'rejected') { %>
+        <div class="glass-card sketch-corner mb-3" style="padding: 1rem 1.25rem; border-left: 4px solid var(--color-red-accent); background: #FFFDFD;">
+          <span class="badge badge-red mb-1">❌ Verification Status: Rejected</span>
+          <p style="font-size: 0.85rem; color: var(--color-red-accent); margin: 0;">
+            Master Admin requested revisions for your doctor registration. Update your profile settings below and click save to resubmit.
+          </p>
+        </div>
+      <% } else if (doctor && doctor.isVerified) { %>
+        <div class="glass-card sketch-corner mb-3" style="padding: 0.75rem 1.25rem; border-left: 4px solid #1B5E34; background: #F4FBF7;">
+          <span class="badge badge-green">✓ Account Status: Verified & Live in Clinic Directory</span>
+        </div>
+      <% } %>
+
+      <form action="/profile/doctor" method="POST">
+        <div class="paper-card mb-3" style="background: var(--bg-paper); border-style: dashed;">
+          <h4 style="margin-bottom: 0.75rem;">🩺 Doctor Practice & Consultation Settings</h4>
+          <p style="font-size: 0.82rem; color: var(--color-soft-ink); margin-bottom: 1.25rem;">
+            Update your medical specialization, consultation fees, working hours, and professional bio.
+          </p>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+            <div class="form-group">
+              <label for="doctorName" class="form-label">Doctor Full Name</label>
+              <input type="text" id="doctorName" name="name" class="form-control" value="<%= doctor ? doctor.name : user.name %>" required>
+            </div>
+
+            <div class="form-group">
+              <label for="specialization" class="form-label">Specialization</label>
+              <select id="specialization" name="specialization" class="form-control" required>
+                <option value="General Medicine" <%= doctor && doctor.specialization === 'General Medicine' ? 'selected' : '' %>>General Medicine</option>
+                <option value="Cardiology" <%= doctor && doctor.specialization === 'Cardiology' ? 'selected' : '' %>>Cardiology</option>
+                <option value="Pediatrics" <%= doctor && doctor.specialization === 'Pediatrics' ? 'selected' : '' %>>Pediatrics</option>
+                <option value="Dermatology" <%= doctor && doctor.specialization === 'Dermatology' ? 'selected' : '' %>>Dermatology</option>
+                <option value="Orthopedics" <%= doctor && doctor.specialization === 'Orthopedics' ? 'selected' : '' %>>Orthopedics</option>
+                <option value="Neurology" <%= doctor && doctor.specialization === 'Neurology' ? 'selected' : '' %>>Neurology</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="qualification" class="form-label">Qualifications</label>
+              <input type="text" id="qualification" name="qualification" class="form-control" value="<%= doctor ? doctor.qualification : 'MBBS, MD' %>" required>
+            </div>
+
+            <div class="form-group">
+              <label for="consultationFee" class="form-label">Consultation Fee (₹ INR)</label>
+              <input type="number" id="consultationFee" name="consultationFee" class="form-control" value="<%= doctor ? doctor.consultationFee : 500 %>" min="0" step="50" required>
+            </div>
+
+            <div class="form-group">
+              <label for="experienceYears" class="form-label">Experience (Years)</label>
+              <input type="number" id="experienceYears" name="experienceYears" class="form-control" value="<%= doctor ? doctor.experienceYears : 5 %>" min="0" required>
+            </div>
+
+            <div class="form-group">
+              <label for="startTime" class="form-label">Working Hours Start</label>
+              <input type="time" id="startTime" name="startTime" class="form-control" value="<%= doctor && doctor.workingHours ? doctor.workingHours.start : '09:00' %>" required>
+            </div>
+
+            <div class="form-group">
+              <label for="endTime" class="form-label">Working Hours End</label>
+              <input type="time" id="endTime" name="endTime" class="form-control" value="<%= doctor && doctor.workingHours ? doctor.workingHours.end : '17:00' %>" required>
+            </div>
+          </div>
+
+          <div class="form-group mt-2">
+            <label for="bio" class="form-label">Professional Bio / Clinical Notes</label>
+            <textarea id="bio" name="bio" class="form-control" rows="3" required><%= doctor ? doctor.bio : 'Experienced medical professional.' %></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary mt-2">💾 Save Doctor Practice Settings</button>
+        </div>
+      </form>
+
+      <!-- DANGER ZONE: DELETE ACCOUNT -->
+      <div class="paper-card" style="border: 1px solid rgba(194, 59, 34, 0.4); background: rgba(254, 242, 242, 0.7); margin-top: 2rem; padding: 1.25rem;">
+        <h4 style="color: var(--color-red-accent); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+          <span>⚠️</span> Danger Zone: Permanent Account Deletion
+        </h4>
+        <p style="font-size: 0.83rem; color: var(--color-soft-ink); margin-bottom: 1.25rem; line-height: 1.4;">
+          Permanently remove your user account, doctor profile, medical appointments, and login credentials from the MongoDB server database. This action is immediate and cannot be undone.
+        </p>
+        <form action="/profile/delete-account" method="POST" onsubmit="return confirm('Are you absolutely sure you want to permanently delete your account from the database? ALL YOUR DATA WILL BE REMOVED.');">
+          <button type="submit" class="btn btn-accent btn-sm" style="background: #C23B22; color: #ffffff; font-weight: 600;">
+            🗑️ Delete Account Permanently from DB
+          </button>
+        </form>
+      </div>
+    </div>
+  <% } else { %>
+    <!-- PATIENT USER PROFILE PORTAL -->
+    <div class="glass-card sketch-corner mb-3">
+      <div class="macos-window-header">
+        <span class="macos-dot macos-dot-red"></span>
+        <span class="macos-dot macos-dot-yellow"></span>
+        <span class="macos-dot macos-dot-green"></span>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+        <div>
+          <span class="mono-label" style="color: var(--color-red-accent);">Patient Portal</span>
+          <h2 style="margin: 0.15rem 0;"><%= user.name %></h2>
+          <p style="font-size: 0.88rem; color: var(--color-soft-ink); margin: 0;">
+            Role: <span class="badge badge-paper"><%= user.role %></span> • Email: <%= user.email %>
+          </p>
+        </div>
+
+        <a href="/doctors" class="btn btn-accent btn-sm">🩺 Book New Appointment &rarr;</a>
+      </div>
+
+      <div class="paper-card">
+        <h4 style="margin-bottom: 0.75rem;">Account Information</h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+          <div>
+            <span class="mono-label" style="font-size: 0.7rem;">Full Name</span>
+            <div style="font-size: 0.95rem; font-weight: 500;"><%= user.name %></div>
+          </div>
+          <div>
+            <span class="mono-label" style="font-size: 0.7rem;">Email Address</span>
+            <div style="font-size: 0.95rem; font-weight: 500;"><%= user.email %></div>
+          </div>
+          <div>
+            <span class="mono-label" style="font-size: 0.7rem;">Account Role</span>
+            <div><span class="badge badge-red"><%= user.role %></span></div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+          <a href="/appointments/my-appointments" class="btn btn-secondary btn-sm">📅 View My Appointments</a>
+          <a href="/doctors" class="btn btn-primary btn-sm">🩺 Browse Doctor Directory</a>
+        </div>
+      </div>
+
+      <!-- DANGER ZONE: DELETE ACCOUNT -->
+      <div class="paper-card" style="border: 1px solid rgba(194, 59, 34, 0.4); background: rgba(254, 242, 242, 0.7); margin-top: 1.5rem; padding: 1.25rem;">
+        <h4 style="color: var(--color-red-accent); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+          <span>⚠️</span> Danger Zone: Permanent Account Deletion
+        </h4>
+        <p style="font-size: 0.83rem; color: var(--color-soft-ink); margin-bottom: 1.25rem; line-height: 1.4;">
+          Permanently delete your account, patient profile, and all booked medical appointments from the database. This action is immediate and cannot be undone.
+        </p>
+        <form action="/profile/delete-account" method="POST" onsubmit="return confirm('Are you absolutely sure you want to permanently delete your account from the database? ALL YOUR APPOINTMENT DATA WILL BE REMOVED.');">
+          <button type="submit" class="btn btn-accent btn-sm" style="background: #C23B22; color: #ffffff; font-weight: 600;">
+            🗑️ Delete Account Permanently from DB
+          </button>
+        </form>
+      </div>
+    </div>
+  <% } %>
+</div>

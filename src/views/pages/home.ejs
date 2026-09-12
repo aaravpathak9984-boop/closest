@@ -1,0 +1,210 @@
+<div style="max-width: 1040px; margin: 1.5rem auto 3rem;">
+  <!-- macOS Hero Glass Window Card (Dynamically Rendered per User Role) -->
+  <div class="glass-card sketch-corner text-center" style="padding: 3.25rem 2.25rem;">
+    <!-- macOS Window Control Lights -->
+    <div class="macos-window-header" style="justify-content: center; margin-bottom: 1.5rem;">
+      <span class="macos-dot macos-dot-red"></span>
+      <span class="macos-dot macos-dot-yellow"></span>
+      <span class="macos-dot macos-dot-green"></span>
+    </div>
+
+    <% if (currentUser && currentUser.role === 'admin') { %>
+      <!-- ADMIN LANDING HERO -->
+      <span class="mono-label" style="letter-spacing: 0.1em; color: var(--color-red-accent);">👑 Clinic Administration Console</span>
+      <h1 style="font-size: 2.75rem; margin: 0.75rem 0 1rem; font-family: var(--font-serif);">Clinic Master Operations & Analytics</h1>
+      <p style="font-size: 1.05rem; color: var(--color-soft-ink); max-width: 680px; margin: 0 auto 2.25rem; line-height: 1.6;">
+        Welcome back, <strong><%= currentUser.name %></strong>! Oversee active specialists, review pending doctor applications, track clinic revenue in ₹, and manage master consultation logs.
+      </p>
+
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="/admin/dashboard" class="btn btn-accent btn-lg">
+          👑 Open Admin Console &rarr;
+        </a>
+        <a href="/appointments/doctor-queue" class="btn btn-primary btn-lg">
+          📋 Doctor Queue
+        </a>
+        <a href="/dashboard" class="btn btn-outline btn-lg">
+          📊 Overview Dashboard
+        </a>
+      </div>
+
+    <% } else if (currentUser && currentUser.role === 'doctor') { %>
+      <!-- DOCTOR LANDING HERO -->
+      <span class="mono-label" style="letter-spacing: 0.1em; color: var(--color-red-accent);">🩺 Doctor Practice & Queue Workspace</span>
+      <h1 style="font-size: 2.75rem; margin: 0.75rem 0 1rem; font-family: var(--font-serif);">Welcome, Dr. <%= currentUser.name %></h1>
+      <p style="font-size: 1.05rem; color: var(--color-soft-ink); max-width: 680px; margin: 0 auto 2.25rem; line-height: 1.6;">
+        Review today's patient consultation queue, accept or reject incoming appointment requests, update clinical notes, and configure your consultation fee settings.
+      </p>
+
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="/appointments/doctor-queue" class="btn btn-accent btn-lg">
+          📋 Open Doctor Queue &rarr;
+        </a>
+        <a href="/profile" class="btn btn-primary btn-lg">
+          👤 Practice Profile & Fees
+        </a>
+        <a href="/dashboard" class="btn btn-outline btn-lg">
+          📊 Overview Dashboard
+        </a>
+      </div>
+
+    <% } else if (currentUser && currentUser.role === 'patient') { %>
+      <!-- PATIENT LANDING HERO -->
+      <span class="mono-label" style="letter-spacing: 0.1em; color: var(--color-red-accent);">🏥 Patient Healthcare Portal</span>
+      <h1 style="font-size: 2.75rem; margin: 0.75rem 0 1rem; font-family: var(--font-serif);">Welcome back, <%= currentUser.name %></h1>
+      <p style="font-size: 1.05rem; color: var(--color-soft-ink); max-width: 680px; margin: 0 auto 2.25rem; line-height: 1.6;">
+        Find experienced clinic specialists, pick convenient 30-minute consultation slots with double-booking prevention, and track your appointment history.
+      </p>
+
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="/doctors" class="btn btn-accent btn-lg">
+          🩺 Browse Doctors & Book Slot &rarr;
+        </a>
+        <a href="/appointments/my-appointments" class="btn btn-primary btn-lg">
+          📅 My Appointments History
+        </a>
+        <a href="/dashboard" class="btn btn-outline btn-lg">
+          📊 Overview Dashboard
+        </a>
+      </div>
+
+    <% } else { %>
+      <!-- GUEST LANDING HERO -->
+      <span class="mono-label" style="letter-spacing: 0.1em; color: var(--color-red-accent);">⚡ Healthcare Domain Platform</span>
+      <h1 style="font-size: 2.85rem; margin: 0.75rem 0 1rem; font-family: var(--font-serif);">Clinic Appointment Management</h1>
+      <p style="font-size: 1.05rem; color: var(--color-soft-ink); max-width: 680px; margin: 0 auto 2.25rem; line-height: 1.6;">
+        Seamless doctor-patient appointment booking, real-time slot selection, double-booking collision prevention, and instant status management.
+      </p>
+
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="/doctors" class="btn btn-accent btn-lg">
+          🩺 Browse Doctors & Book Slot &rarr;
+        </a>
+        <a href="/login" class="btn btn-primary btn-lg">
+          Log In
+        </a>
+        <a href="/signup" class="btn btn-outline btn-lg">
+          Create Free Account
+        </a>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Role-Tailored Feature Cards Grid -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; margin-top: 2rem;">
+    <% if (currentUser && currentUser.role === 'admin') { %>
+      <!-- ADMIN FEATURE CARDS -->
+      <div class="paper-card">
+        <div class="macos-window-header mb-1">
+          <span class="macos-dot macos-dot-red"></span>
+          <span class="macos-dot macos-dot-yellow"></span>
+          <span class="macos-dot macos-dot-green"></span>
+        </div>
+        <h3 style="font-size: 1.15rem; margin-bottom: 0.4rem;">💰 Revenue & Financial Analytics</h3>
+        <p style="font-size: 0.85rem; color: var(--color-soft-ink); line-height: 1.5; margin: 0;">
+          Live revenue computation in ₹ based on completed patient consultations and specialist fee structures.
+        </p>
+      </div>
+
+      <div class="paper-card">
+        <div class="macos-window-header mb-1">
+          <span class="macos-dot macos-dot-red"></span>
+          <span class="macos-dot macos-dot-yellow"></span>
+          <span class="macos-dot macos-dot-green"></span>
+        </div>
+        <h3 style="font-size: 1.15rem; margin-bottom: 0.4rem;">👨‍⚕️ Doctor Verifications & Roster</h3>
+        <p style="font-size: 0.85rem; color: var(--color-soft-ink); line-height: 1.5; margin: 0;">
+          Review and approve pending doctor applications before they appear in the active clinic directory.
+        </p>
+      </div>
+
+      <div class="paper-card">
+        <div class="macos-window-header mb-1">
+          <span class="macos-dot macos-dot-red"></span>
+          <span class="macos-dot macos-dot-yellow"></span>
+          <span class="macos-dot macos-dot-green"></span>
+        </div>
+        <h3 style="font-size: 1.15rem; margin-bottom: 0.4rem;">📋 Master Clinic Logs</h3>
+        <p style="font-size: 0.85rem; color: var(--color-soft-ink); line-height: 1.5; margin: 0;">
+          Filter appointments by specialist or status and perform direct status updates or record deletions.
+        </p>
+      </div>
+
+    <% } else if (currentUser && currentUser.role === 'doctor') { %>
+      <!-- DOCTOR FEATURE CARDS -->
+      <div class="paper-card">
+        <div class="macos-window-header mb-1">
+          <span class="macos-dot macos-dot-red"></span>
+          <span class="macos-dot macos-dot-yellow"></span>
+          <span class="macos-dot macos-dot-green"></span>
+        </div>
+        <h3 style="font-size: 1.15rem; margin-bottom: 0.4rem;">📋 Patient Queue Management</h3>
+        <p style="font-size: 0.85rem; color: var(--color-soft-ink); line-height: 1.5; margin: 0;">
+          Review incoming patient bookings, accept or reject requests, and mark consultations completed upon visit.
+        </p>
+      </div>
+
+      <div class="paper-card">
+        <div class="macos-window-header mb-1">
+          <span class="macos-dot macos-dot-red"></span>
+          <span class="macos-dot macos-dot-yellow"></span>
+          <span class="macos-dot macos-dot-green"></span>
+        </div>
+        <h3 style="font-size: 1.15rem; margin-bottom: 0.4rem;">💳 Practice Fees & Hours</h3>
+        <p style="font-size: 0.85rem; color: var(--color-soft-ink); line-height: 1.5; margin: 0;">
+          Dynamically adjust your consultation fee in ₹ (e.g. ₹500 - ₹1200) and set clinic operating hours.
+        </p>
+      </div>
+
+      <div class="paper-card">
+        <div class="macos-window-header mb-1">
+          <span class="macos-dot macos-dot-red"></span>
+          <span class="macos-dot macos-dot-yellow"></span>
+          <span class="macos-dot macos-dot-green"></span>
+        </div>
+        <h3 style="font-size: 1.15rem; margin-bottom: 0.4rem;">📝 Clinical Case Notes</h3>
+        <p style="font-size: 0.85rem; color: var(--color-soft-ink); line-height: 1.5; margin: 0;">
+          Attach clinical guidance and prescription advice when updating consultation status.
+        </p>
+      </div>
+
+    <% } else { %>
+      <!-- PATIENT / GUEST FEATURE CARDS -->
+      <div class="paper-card">
+        <div class="macos-window-header mb-1">
+          <span class="macos-dot macos-dot-red"></span>
+          <span class="macos-dot macos-dot-yellow"></span>
+          <span class="macos-dot macos-dot-green"></span>
+        </div>
+        <h3 style="font-size: 1.15rem; margin-bottom: 0.4rem;">🩺 Specialized Doctors</h3>
+        <p style="font-size: 0.85rem; color: var(--color-soft-ink); line-height: 1.5; margin: 0;">
+          Browse verified specialists across Cardiology, General Medicine, Pediatrics, and Dermatology with transparent fees.
+        </p>
+      </div>
+
+      <div class="paper-card">
+        <div class="macos-window-header mb-1">
+          <span class="macos-dot macos-dot-red"></span>
+          <span class="macos-dot macos-dot-yellow"></span>
+          <span class="macos-dot macos-dot-green"></span>
+        </div>
+        <h3 style="font-size: 1.15rem; margin-bottom: 0.4rem;">🛡️ Double-Booking Guard</h3>
+        <p style="font-size: 0.85rem; color: var(--color-soft-ink); line-height: 1.5; margin: 0;">
+          Strict database collision checks prevent double bookings and auto-suggest the next open slot if taken.
+        </p>
+      </div>
+
+      <div class="paper-card">
+        <div class="macos-window-header mb-1">
+          <span class="macos-dot macos-dot-red"></span>
+          <span class="macos-dot macos-dot-yellow"></span>
+          <span class="macos-dot macos-dot-green"></span>
+        </div>
+        <h3 style="font-size: 1.15rem; margin-bottom: 0.4rem;">⚡ Real-Time Slot Picker</h3>
+        <p style="font-size: 0.85rem; color: var(--color-soft-ink); line-height: 1.5; margin: 0;">
+          Select available 30-minute consultation slots directly from operating hours with instant feedback.
+        </p>
+      </div>
+    <% } %>
+  </div>
+</div>
