@@ -96,11 +96,43 @@ const bookAppointment = asyncHandler(async (req, res) => {
 
 // GET /appointments/my-appointments - Patient appointment history
 const getPatientAppointments = asyncHandler(async (req, res) => {
+  const Appointment = require('../models/Appointment');
   const appointments = await appointmentService.getPatientAppointments(req.user.id);
+
+  // Compute live queue position for patient's active appointments
+  const formattedAppointments = await Promise.all(
+    appointments.map(async (app) => {
+      const appObj = app.toObject ? app.toObject() : app;
+      if (app.status === 'pending' || app.status === 'accepted') {
+        const doctorApps = await Appointment.find({
+          doctor: app.doctor ? app.doctor._id : app.doctor,
+          date: app.date,
+          status: { $in: ['pending', 'accepted'] },
+        }).sort({ timeSlot: 1 });
+
+        const myIndex = doctorApps.findIndex((a) => a._id.toString() === app._id.toString());
+        if (myIndex !== -1) {
+          const tokenNum = myIndex + 1;
+          const waitMins = myIndex * 15;
+          appObj.queueToken = `Token #${tokenNum}`;
+          appObj.tokenLabel = tokenNum === 1 
+            ? '🎟️ Token #1 - You are Next in Line!' 
+            : `🎟️ Token #${tokenNum} - Waiting (${myIndex} patient${myIndex === 1 ? '' : 's'} ahead, ~${waitMins}m wait)`;
+        }
+      } else if (app.status === 'completed') {
+        appObj.queueToken = 'Finished';
+        appObj.tokenLabel = '✅ Completed Consultation';
+      } else {
+        appObj.queueToken = 'N/A';
+        appObj.tokenLabel = '❌ Cancelled';
+      }
+      return appObj;
+    })
+  );
 
   res.render('clinic/patient-history', {
     title: 'My Appointment History',
-    appointments,
+    appointments: formattedAppointments,
   });
 });
 
@@ -152,13 +184,11 @@ const processDoctorOnboarding = asyncHandler(async (req, res) => {
 const getDoctorQueue = asyncHandler(async (req, res) => {
   let doctor = await Doctor.findOne({ user: req.user.id });
 
-  // If user is a Doctor but hasn't created a doctor profile yet, redirect to onboarding form
   if (!doctor && req.user.role === 'doctor') {
     setFlash(req, 'info', 'Please complete your doctor clinical profile to submit for admin verification.');
     return res.redirect('/appointments/doctor-onboarding');
   }
 
-  // If user is Admin or doctor without profile, default to first doctor
   if (!doctor) {
     doctor = await Doctor.findOne();
   }
@@ -171,19 +201,55 @@ const getDoctorQueue = asyncHandler(async (req, res) => {
   const statusFilter = req.query.status || '';
   const dateFilter = req.query.date || '';
   const sortBy = req.query.sortBy || 'time_asc';
-  const appointments = await appointmentService.getDoctorAppointments(doctor._id, statusFilter, sortBy, dateFilter);
+  const rawAppointments = await appointmentService.getDoctorAppointments(doctor._id, statusFilter, sortBy, dateFilter);
 
-  // Compute patient volume metrics
+  // Compute patient volume & waiting list metrics
   const Appointment = require('../models/Appointment');
-  const allDoctorApps = await Appointment.find({ doctor: doctor._id });
+  const allDoctorApps = await Appointment.find({ doctor: doctor._id }).populate('patient', 'name email');
 
   const patientIdentifiers = new Set(allDoctorApps.map((a) => (a.patient ? a.patient.toString() : a.patientName)));
   const selectedDateApps = dateFilter ? allDoctorApps.filter((a) => a.date === dateFilter) : allDoctorApps;
+
+  // Compute active waiting line (pending or accepted)
+  const activeQueue = selectedDateApps
+    .filter((a) => a.status === 'pending' || a.status === 'accepted')
+    .sort((a, b) => a.timeSlot.localeCompare(b.timeSlot));
+
+  const nextPatient = activeQueue.length > 0 ? activeQueue[0] : null;
+
+  // Build active token map for queue positions
+  const activeTokenMap = new Map();
+  activeQueue.forEach((app, idx) => {
+    activeTokenMap.set(app._id.toString(), {
+      tokenNum: idx + 1,
+      waitMins: idx * 15,
+    });
+  });
+
+  const appointments = rawAppointments.map((app) => {
+    const appObj = app.toObject ? app.toObject() : app;
+    const tokenInfo = activeTokenMap.get(app._id.toString());
+
+    if (tokenInfo) {
+      appObj.queueToken = `Token #${tokenInfo.tokenNum}`;
+      appObj.tokenLabel = tokenInfo.tokenNum === 1
+        ? '🎟️ Token #1 - 🚨 Next Patient'
+        : `🎟️ Token #${tokenInfo.tokenNum} - Waiting (~${tokenInfo.waitMins}m wait)`;
+    } else if (app.status === 'completed') {
+      appObj.queueToken = 'Finished';
+      appObj.tokenLabel = '✅ Completed Visit';
+    } else {
+      appObj.queueToken = 'N/A';
+      appObj.tokenLabel = '❌ Cancelled';
+    }
+    return appObj;
+  });
 
   const metrics = {
     totalPatients: patientIdentifiers.size,
     totalConsultations: allDoctorApps.length,
     selectedDatePatientCount: selectedDateApps.length,
+    waitingCount: activeQueue.length,
     pendingCount: selectedDateApps.filter((a) => a.status === 'pending').length,
     acceptedCount: selectedDateApps.filter((a) => a.status === 'accepted').length,
     completedCount: selectedDateApps.filter((a) => a.status === 'completed').length,
@@ -194,6 +260,7 @@ const getDoctorQueue = asyncHandler(async (req, res) => {
     doctor,
     appointments,
     metrics,
+    nextPatient,
     selectedStatus: statusFilter,
     selectedDate: dateFilter,
     sortBy,

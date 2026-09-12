@@ -53,6 +53,28 @@
     </div>
   </div>
 
+  <!-- LIVE NEXT PATIENT ALERT BANNER -->
+  <% if (nextPatient) { %>
+    <div class="glass-card sketch-corner mb-3" style="padding: 1.25rem 1.75rem; border-left: 4px solid #1B5E34; background: #F4FBF7;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <span class="badge badge-green mb-1">🚨 CURRENT PATIENT IN LINE (TOKEN #1)</span>
+          <h3 style="margin: 0.1rem 0;">Next Up: <%= nextPatient.patientName || (nextPatient.patient ? nextPatient.patient.name : 'Patient') %></h3>
+          <p style="font-size: 0.88rem; color: var(--color-soft-ink); margin: 0;">
+            Scheduled Time: <strong><%= nextPatient.timeSlot %></strong> (<%= nextPatient.date %>) • Phone: <strong><%= nextPatient.patientPhone || 'N/A' %></strong> • Symptoms: <strong><%= nextPatient.symptoms || nextPatient.reason %></strong>
+          </p>
+        </div>
+
+        <form action="/appointments/<%= nextPatient._id %>/status" method="POST" style="display: inline;">
+          <input type="hidden" name="status" value="completed">
+          <button type="submit" class="btn btn-accent btn-sm" style="font-size: 0.9rem; padding: 0.55rem 1.25rem;">
+            ✅ Complete Consultation & Call Next
+          </button>
+        </form>
+      </div>
+    </div>
+  <% } %>
+
   <!-- PATIENT VOLUME & CLINICAL METRICS CARDS -->
   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
     <div class="paper-card" style="padding: 1.25rem;">
@@ -65,30 +87,30 @@
 
     <div class="paper-card" style="padding: 1.25rem;">
       <span class="mono-label" style="font-size: 0.68rem;">
-        <%= selectedDate ? 'Patients on ' + selectedDate : 'Total Consultations' %>
+        <%= selectedDate ? 'Patients on ' + selectedDate : 'Total Scheduled Patients' %>
       </span>
       <div style="font-family: var(--font-serif); font-size: 2.1rem; font-weight: 700; color: var(--color-red-accent); margin-top: 0.2rem;">
         <%= metrics ? metrics.selectedDatePatientCount : appointments.length %>
       </div>
       <span style="font-size: 0.75rem; color: var(--color-soft-ink);">
-        <%= selectedDate ? 'Filtered by Selected Calendar Date' : 'All Scheduled Appointments' %>
+        <%= selectedDate ? 'Filtered Calendar Volume' : 'All Scheduled Patients' %>
       </span>
     </div>
 
     <div class="paper-card" style="padding: 1.25rem;">
-      <span class="mono-label" style="font-size: 0.68rem;">Pending Action</span>
+      <span class="mono-label" style="font-size: 0.68rem;">Waiting in Line</span>
       <div style="font-family: var(--font-serif); font-size: 2.1rem; font-weight: 700; color: #D9822B; margin-top: 0.2rem;">
-        <%= metrics ? metrics.pendingCount : 0 %>
+        <%= metrics ? metrics.waitingCount : 0 %>
       </div>
-      <span style="font-size: 0.75rem; color: var(--color-soft-ink);">Requires Accept / Reject</span>
+      <span style="font-size: 0.75rem; color: var(--color-soft-ink);">Active Queue Tokens</span>
     </div>
 
     <div class="paper-card" style="padding: 1.25rem;">
-      <span class="mono-label" style="font-size: 0.68rem;">Accepted Visits</span>
+      <span class="mono-label" style="font-size: 0.68rem;">Completed Consultations</span>
       <div style="font-family: var(--font-serif); font-size: 2.1rem; font-weight: 700; color: #1B5E34; margin-top: 0.2rem;">
-        <%= metrics ? metrics.acceptedCount : 0 %>
+        <%= metrics ? metrics.completedCount : 0 %>
       </div>
-      <span style="font-size: 0.75rem; color: var(--color-soft-ink);">Confirmed Consultations</span>
+      <span style="font-size: 0.75rem; color: var(--color-soft-ink);">Finished Consultations</span>
     </div>
   </div>
 
@@ -96,9 +118,9 @@
   <div class="paper-card mb-4" style="padding: 1.5rem;">
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.25rem;">
       <div>
-        <h3 style="margin: 0;">Patient Consultation Queue</h3>
+        <h3 style="margin: 0;">Patient Waiting List & Consultation Queue</h3>
         <p style="font-size: 0.82rem; color: var(--color-soft-ink); margin: 0.2rem 0 0;">
-          Select a date using the calendar picker to view scheduled patients for that date
+          Select a date using the calendar picker to view scheduled patients and queue tokens for that date
         </p>
       </div>
 
@@ -144,7 +166,7 @@
     <% if (selectedDate) { %>
       <div style="margin-top: 1rem; padding: 0.6rem 1rem; background: var(--bg-paper); border: 1px solid var(--color-border); border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
         <span style="font-size: 0.83rem; color: var(--color-ink);">
-          📅 Showing patients for date: <strong><%= selectedDate %></strong> (<%= appointments.length %> appointment<%= appointments.length === 1 ? '' : 's' %> found)
+          📅 Showing patients for date: <strong><%= selectedDate %></strong> (<%= appointments.length %> patient<%= appointments.length === 1 ? '' : 's' %> in queue)
         </span>
         <a href="/appointments/doctor-queue?status=<%= selectedStatus %>&sortBy=<%= sortBy %>" style="font-size: 0.78rem; color: var(--color-red-accent); text-decoration: underline;">
           View All Dates
@@ -153,15 +175,16 @@
     <% } %>
   </div>
 
-  <!-- Appointments Queue Table -->
+  <!-- Appointments Queue Table with Token Positions -->
   <% if (appointments && appointments.length > 0) { %>
     <div class="table-container">
       <table class="editorial-table">
         <thead>
           <tr>
+            <th>Queue Token</th>
             <th>Date & Time Slot</th>
             <th>Patient Name</th>
-            <th>Contact Phone / Email</th>
+            <th>Contact Phone</th>
             <th>Symptoms & Reason</th>
             <th>Status</th>
             <th style="text-align: right;">Doctor Actions</th>
@@ -171,7 +194,12 @@
           <% appointments.forEach(app => { %>
             <tr>
               <td>
-                <div style="font-family: var(--font-mono); font-size: 0.9rem; font-weight: 600;"><%= app.date %></div>
+                <span class="badge <%= app.tokenLabel && app.tokenLabel.includes('#1') ? 'badge-green' : app.status === 'completed' ? 'badge-paper' : 'badge-yellow' %>" style="font-size: 0.75rem; font-weight: 600;">
+                  <%= app.tokenLabel || app.queueToken %>
+                </span>
+              </td>
+              <td>
+                <div style="font-family: var(--font-mono); font-size: 0.88rem; font-weight: 600;"><%= app.date %></div>
                 <div class="mono-label" style="font-size: 0.78rem; color: var(--color-red-accent);">🕒 <%= app.timeSlot %></div>
               </td>
               <td style="font-weight: 600;">
@@ -179,14 +207,13 @@
               </td>
               <td>
                 <div style="font-size: 0.85rem; font-weight: 500;">📞 <%= app.patientPhone || 'N/A' %></div>
-                <div style="font-size: 0.78rem; color: var(--color-soft-ink);"><%= app.patient ? app.patient.email : '' %></div>
               </td>
-              <td style="font-size: 0.85rem; max-width: 240px;">
+              <td style="font-size: 0.85rem; max-width: 220px;">
                 <div style="font-weight: 500; color: var(--color-ink);"><%= app.symptoms || app.reason %></div>
               </td>
               <td>
                 <span class="badge <%= app.status === 'accepted' ? 'badge-green' : app.status === 'completed' ? 'badge-paper' : app.status === 'pending' ? 'badge-yellow' : 'badge-red' %>">
-                  <%= app.status === 'accepted' ? 'Accepted' : app.status === 'pending' ? 'Pending Request' : app.status %>
+                  <%= app.status === 'accepted' ? 'Accepted' : app.status === 'pending' ? 'Pending' : app.status %>
                 </span>
               </td>
               <td style="text-align: right;">
@@ -195,19 +222,19 @@
                     <form action="/appointments/<%= app._id %>/status" method="POST" style="display: inline;">
                       <input type="hidden" name="status" value="accepted">
                       <button type="submit" class="btn btn-secondary btn-sm" style="color: #1B5E34; font-weight: 600;">
-                        ✓ Accept Request
+                        ✓ Accept
                       </button>
                     </form>
                     <form action="/appointments/<%= app._id %>/status" method="POST" style="display: inline;">
                       <input type="hidden" name="status" value="rejected">
                       <button type="submit" class="btn btn-outline btn-sm" style="color: var(--color-red-accent); font-weight: 600;">
-                        ✗ Reject Request
+                        ✗ Reject
                       </button>
                     </form>
                   <% } else if (app.status === 'accepted') { %>
                     <form action="/appointments/<%= app._id %>/status" method="POST" style="display: inline;">
                       <input type="hidden" name="status" value="completed">
-                      <button type="submit" class="btn btn-accent btn-sm">Mark Completed</button>
+                      <button type="submit" class="btn btn-accent btn-sm">Complete Visit</button>
                     </form>
                   <% } else { %>
                     <span style="font-size: 0.78rem; color: var(--color-soft-ink);">Archived</span>
