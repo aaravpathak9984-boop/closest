@@ -1,0 +1,253 @@
+<div class="container" style="max-width: 840px; margin: 2rem auto; padding: 0 1rem;">
+  <div style="margin-bottom: 2rem;">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <span class="badge badge-paper" style="background: rgba(143, 45, 45, 0.1); color: var(--color-crimson); font-size: 0.8rem; font-weight: 700;">
+          🛡️ MANDATORY PRACTITIONER eKYC VERIFICATION
+        </span>
+        <h1 style="font-family: var(--font-serif); font-size: 2.2rem; margin: 0.5rem 0 0.25rem 0; color: var(--color-ink);">
+          Doctor eKYC Verification Application
+        </h1>
+        <p style="color: var(--color-soft-ink); font-size: 0.95rem; margin: 0;">
+          Submit your official medical registration & government identity credentials to request your live video verification slot with Master Admin.
+        </p>
+      </div>
+      <a href="/appointments/doctor-queue" class="btn btn-outline" style="font-size: 0.85rem;">
+        ← Back to Queue
+      </a>
+    </div>
+  </div>
+
+  <% if (doctor && doctor.ekycStatus === 'applied') { %>
+    <div class="card" style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+      <div style="display: flex; align-items: flex-start; gap: 1rem;">
+        <span style="font-size: 2rem;">⏳</span>
+        <div>
+          <h3 style="margin: 0 0 0.5rem 0; color: #b45309; font-size: 1.15rem;">eKYC Verification Application Under Review</h3>
+          <p style="margin: 0 0 0.75rem 0; font-size: 0.9rem; color: #78350f; line-height: 1.5;">
+            Your eKYC credentials have been submitted to Master Admin (<strong>aaravpathak9984@gmail.com</strong>). Your requested verification slot is <strong><%= doctor.ekycSlot ? doctor.ekycSlot.requestedDate : 'Pending' %> at <%= doctor.ekycSlot ? doctor.ekycSlot.requestedTime : '' %></strong>.
+          </p>
+          <div style="font-size: 0.85rem; color: #92400e; background: rgba(255, 255, 255, 0.6); padding: 0.6rem 0.9rem; border-radius: 6px;">
+            <strong>Status:</strong> Waiting for Admin to confirm & assign your live video call slot details.
+          </div>
+        </div>
+      </div>
+    </div>
+  <% } else if (doctor && doctor.ekycStatus === 'slot_assigned') { %>
+    <div class="card" style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+      <div style="display: flex; align-items: flex-start; gap: 1rem;">
+        <span style="font-size: 2rem;">📅</span>
+        <div>
+          <h3 style="margin: 0 0 0.5rem 0; color: #047857; font-size: 1.15rem;">eKYC Video Call Verification Slot Confirmed!</h3>
+          <p style="margin: 0 0 0.75rem 0; font-size: 0.95rem; color: #065f46;">
+            <strong>Assigned Slot:</strong> <span style="background: #d1fae5; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 700; color: #064e3b;"><%= doctor.ekycSlot.assignedSlot %></span>
+          </p>
+          <% if (doctor.ekycSlot.adminNotes) { %>
+            <p style="margin: 0; font-size: 0.85rem; color: #047857;">
+              <strong>Admin Instructions:</strong> <%= doctor.ekycSlot.adminNotes %>
+            </p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  <% } else if (doctor && doctor.ekycStatus === 'verified') { %>
+    <div class="card" style="background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <span style="font-size: 2.2rem;">✅</span>
+        <div>
+          <h3 style="margin: 0 0 0.25rem 0; color: #1d4ed8; font-size: 1.15rem;">eKYC Verified Medical Practitioner</h3>
+          <p style="margin: 0; font-size: 0.9rem; color: #1e40af;">
+            Your credentials have been fully verified. Your profile is live and active in the public doctor directory.
+          </p>
+        </div>
+      </div>
+    </div>
+  <% } %>
+
+  <div class="card" style="background: var(--color-paper); border: 1px solid var(--color-border); border-radius: 16px; padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.04);">
+    <form action="/doctors/ekyc" method="POST">
+      <!-- Section 1: Doctor Identity & License -->
+      <div style="border-bottom: 1px dashed var(--color-border); padding-bottom: 1.5rem; margin-bottom: 1.5rem;">
+        <h3 style="font-family: var(--font-serif); font-size: 1.25rem; margin: 0 0 1rem 0; color: var(--color-ink); display: flex; align-items: center; gap: 0.5rem;">
+          <span>📋</span> 1. Clinical Credentials & Registration
+        </h3>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem;">
+          <div>
+            <label for="doctorName" class="form-label" style="font-weight: 600; font-size: 0.85rem;">Practitioner Full Name</label>
+            <input type="text" id="doctorName" class="form-control" value="<%= user.name %>" disabled style="background: rgba(0,0,0,0.03);" />
+          </div>
+
+          <div>
+            <label for="doctorEmail" class="form-label" style="font-weight: 600; font-size: 0.85rem;">Registered Email</label>
+            <input type="email" id="doctorEmail" class="form-control" value="<%= user.email %>" disabled style="background: rgba(0,0,0,0.03);" />
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-top: 1.25rem;">
+          <div>
+            <label for="licenseNumber" class="form-label" style="font-weight: 600; font-size: 0.85rem;">
+              Medical Council License Number <span style="color: var(--color-crimson);">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="licenseNumber" 
+              name="licenseNumber" 
+              class="form-control" 
+              placeholder="e.g. MCI/2026/98412-A"
+              value="<%= doctor ? doctor.licenseNumber : '' %>"
+              required 
+            />
+            <span style="font-size: 0.75rem; color: var(--color-soft-ink);">Enter your State or National Medical Council Registration Number</span>
+          </div>
+
+          <div>
+            <label for="govtIdType" class="form-label" style="font-weight: 600; font-size: 0.85rem;">
+              Government Identity Proof Type <span style="color: var(--color-crimson);">*</span>
+            </label>
+            <select id="govtIdType" name="govtIdType" class="form-select" required>
+              <option value="Medical Council Registration Certificate" <%= doctor && doctor.govtIdType === 'Medical Council Registration Certificate' ? 'selected' : '' %>>Medical Council Registration Certificate</option>
+              <option value="Aadhaar Card" <%= doctor && doctor.govtIdType === 'Aadhaar Card' ? 'selected' : '' %>>Aadhaar Card</option>
+              <option value="Passport" <%= doctor && doctor.govtIdType === 'Passport' ? 'selected' : '' %>>Passport</option>
+              <option value="Voter ID" <%= doctor && doctor.govtIdType === 'Voter ID' ? 'selected' : '' %>>Voter ID</option>
+              <option value="Driving License" <%= doctor && doctor.govtIdType === 'Driving License' ? 'selected' : '' %>>Driving License</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="govtIdNumber" class="form-label" style="font-weight: 600; font-size: 0.85rem;">
+              Government ID Number <span style="color: var(--color-crimson);">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="govtIdNumber" 
+              name="govtIdNumber" 
+              class="form-control" 
+              placeholder="e.g. 1234-5678-9012"
+              value="<%= doctor ? doctor.govtIdNumber : '' %>"
+              required 
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Medical Qualifications & Practice -->
+      <div style="border-bottom: 1px dashed var(--color-border); padding-bottom: 1.5rem; margin-bottom: 1.5rem;">
+        <h3 style="font-family: var(--font-serif); font-size: 1.25rem; margin: 0 0 1rem 0; color: var(--color-ink); display: flex; align-items: center; gap: 0.5rem;">
+          <span>🩺</span> 2. Practice Details & Consultation Fee
+        </h3>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem;">
+          <div>
+            <label for="qualification" class="form-label" style="font-weight: 600; font-size: 0.85rem;">
+              Medical Qualification Degree <span style="color: var(--color-crimson);">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="qualification" 
+              name="qualification" 
+              class="form-control" 
+              placeholder="e.g. MBBS, MD Cardiology"
+              value="<%= doctor ? doctor.qualification : '' %>"
+              required 
+            />
+          </div>
+
+          <div>
+            <label for="specialization" class="form-label" style="font-weight: 600; font-size: 0.85rem;">
+              Specialization <span style="color: var(--color-crimson);">*</span>
+            </label>
+            <select id="specialization" name="specialization" class="form-select" required>
+              <option value="General Medicine" <%= doctor && doctor.specialization === 'General Medicine' ? 'selected' : '' %>>General Medicine</option>
+              <option value="Cardiology" <%= doctor && doctor.specialization === 'Cardiology' ? 'selected' : '' %>>Cardiology</option>
+              <option value="Pediatrics" <%= doctor && doctor.specialization === 'Pediatrics' ? 'selected' : '' %>>Pediatrics</option>
+              <option value="Dermatology" <%= doctor && doctor.specialization === 'Dermatology' ? 'selected' : '' %>>Dermatology</option>
+              <option value="Orthopedics" <%= doctor && doctor.specialization === 'Orthopedics' ? 'selected' : '' %>>Orthopedics</option>
+              <option value="Neurology" <%= doctor && doctor.specialization === 'Neurology' ? 'selected' : '' %>>Neurology</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="experienceYears" class="form-label" style="font-weight: 600; font-size: 0.85rem;">Experience (Years)</label>
+            <input 
+              type="number" 
+              id="experienceYears" 
+              name="experienceYears" 
+              class="form-control" 
+              min="0" 
+              max="60"
+              value="<%= doctor ? doctor.experienceYears : 1 %>"
+              required 
+            />
+          </div>
+
+          <div>
+            <label for="consultationFee" class="form-label" style="font-weight: 600; font-size: 0.85rem;">Consultation Fee (₹)</label>
+            <input 
+              type="number" 
+              id="consultationFee" 
+              name="consultationFee" 
+              class="form-control" 
+              min="0" 
+              step="50"
+              value="<%= doctor ? doctor.consultationFee : 500 %>"
+              required 
+            />
+          </div>
+        </div>
+
+        <div style="margin-top: 1.25rem;">
+          <label for="bio" class="form-label" style="font-weight: 600; font-size: 0.85rem;">Professional Bio & Clinical Background</label>
+          <textarea id="bio" name="bio" class="form-control" rows="3" placeholder="Describe your clinical expertise, background, and patient care philosophy..."><%= doctor ? doctor.bio : '' %></textarea>
+        </div>
+      </div>
+
+      <!-- Section 3: eKYC Video Verification Slot Request -->
+      <div style="margin-bottom: 2rem;">
+        <h3 style="font-family: var(--font-serif); font-size: 1.25rem; margin: 0 0 1rem 0; color: var(--color-ink); display: flex; align-items: center; gap: 0.5rem;">
+          <span>📹</span> 3. Request Live Video eKYC Verification Slot
+        </h3>
+        <p style="font-size: 0.85rem; color: var(--color-soft-ink); margin-bottom: 1rem;">
+          Master Admin will conduct a 5-minute live identity & document verification call before granting your clinical practice badge.
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem;">
+          <div>
+            <label for="requestedDate" class="form-label" style="font-weight: 600; font-size: 0.85rem;">
+              Preferred Date <span style="color: var(--color-crimson);">*</span>
+            </label>
+            <input 
+              type="date" 
+              id="requestedDate" 
+              name="requestedDate" 
+              class="form-control" 
+              min="<%= new Date().toISOString().split('T')[0] %>"
+              value="<%= doctor && doctor.ekycSlot ? doctor.ekycSlot.requestedDate : new Date().toISOString().split('T')[0] %>"
+              required 
+            />
+          </div>
+
+          <div>
+            <label for="requestedTime" class="form-label" style="font-weight: 600; font-size: 0.85rem;">
+              Preferred Time Slot <span style="color: var(--color-crimson);">*</span>
+            </label>
+            <select id="requestedTime" name="requestedTime" class="form-select" required>
+              <option value="10:00 AM - 10:30 AM" <%= doctor && doctor.ekycSlot && doctor.ekycSlot.requestedTime === '10:00 AM - 10:30 AM' ? 'selected' : '' %>>10:00 AM - 10:30 AM Morning</option>
+              <option value="11:30 AM - 12:00 PM" <%= doctor && doctor.ekycSlot && doctor.ekycSlot.requestedTime === '11:30 AM - 12:00 PM' ? 'selected' : '' %>>11:30 AM - 12:00 PM Morning</option>
+              <option value="02:00 PM - 02:30 PM" <%= doctor && doctor.ekycSlot && doctor.ekycSlot.requestedTime === '02:00 PM - 02:30 PM' ? 'selected' : '' %>>02:00 PM - 02:30 PM Afternoon</option>
+              <option value="04:00 PM - 04:30 PM" <%= doctor && doctor.ekycSlot && doctor.ekycSlot.requestedTime === '04:00 PM - 04:30 PM' ? 'selected' : '' %>>04:00 PM - 04:30 PM Evening</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit Action Button -->
+      <div style="display: flex; justify-content: flex-end; gap: 1rem; align-items: center;">
+        <a href="/appointments/doctor-queue" class="btn btn-outline">Cancel</a>
+        <button type="submit" class="btn btn-primary" style="padding: 0.75rem 2rem; font-weight: 600;">
+          🚀 Submit eKYC Application & Request Slot
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

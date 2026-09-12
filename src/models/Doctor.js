@@ -21,24 +21,50 @@ const doctorSchema = new mongoose.Schema(
     },
     qualification: {
       type: String,
-      default: 'MBBS, MD',
+      default: '',
+    },
+    licenseNumber: {
+      type: String,
+      default: '',
+      trim: true,
+    },
+    govtIdType: {
+      type: String,
+      default: 'Medical Council Registration Certificate',
+      trim: true,
+    },
+    govtIdNumber: {
+      type: String,
+      default: '',
+      trim: true,
     },
     experienceYears: {
       type: Number,
-      default: 5,
+      default: 0,
     },
     consultationFee: {
       type: Number,
-      default: 500,
+      default: 0,
     },
     bio: {
       type: String,
-      default: 'Experienced healthcare professional providing compassionate clinical care.',
+      default: '',
     },
     workingHours: {
       start: { type: String, default: '09:00' },
       end: { type: String, default: '17:00' },
       slotDurationMinutes: { type: Number, default: 30 },
+    },
+    ekycStatus: {
+      type: String,
+      enum: ['not_applied', 'applied', 'slot_assigned', 'verified', 'rejected'],
+      default: 'not_applied',
+    },
+    ekycSlot: {
+      requestedDate: { type: String, default: '' },
+      requestedTime: { type: String, default: '' },
+      assignedSlot: { type: String, default: '' },
+      adminNotes: { type: String, default: '' },
     },
     isVerified: {
       type: Boolean,
@@ -64,3 +90,4 @@ const doctorSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model('Doctor', doctorSchema, 'doctors');
+

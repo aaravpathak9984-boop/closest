@@ -52,6 +52,10 @@ const getAdminDashboard = asyncHandler(async (req, res) => {
     verificationStatus: 'rejected',
   }).populate('user', 'name email').sort({ createdAt: -1 });
 
+  const ekycDoctors = await Doctor.find({
+    ekycStatus: { $in: ['applied', 'slot_assigned', 'not_applied', 'rejected'] },
+  }).populate('user', 'name email').sort({ updatedAt: -1 });
+
   const allUsers = await User.find().sort({ createdAt: -1 });
 
   res.render('admin/dashboard', {
@@ -60,12 +64,64 @@ const getAdminDashboard = asyncHandler(async (req, res) => {
     doctors,
     pendingDoctors,
     rejectedDoctors,
+    ekycDoctors,
     allUsers,
     appointments,
     metrics,
     selectedDoctor: req.query.doctor || '',
     selectedStatus: req.query.status || '',
   });
+});
+
+// POST /admin/doctors/:id/assign-slot - Assign eKYC video verification slot to Doctor
+const assignEkycSlot = asyncHandler(async (req, res) => {
+  const doctorId = req.params.id;
+  const { assignedSlot, adminNotes } = req.body;
+
+  if (!assignedSlot) {
+    setFlash(req, 'error', 'Please specify the assigned eKYC slot date, time, and room details.');
+    return res.redirect('/admin/dashboard');
+  }
+
+  const doctor = await Doctor.findById(doctorId);
+  if (doctor) {
+    doctor.ekycStatus = 'slot_assigned';
+    doctor.ekycSlot.assignedSlot = assignedSlot.trim();
+    if (adminNotes) doctor.ekycSlot.adminNotes = adminNotes.trim();
+    await doctor.save();
+    setFlash(req, 'success', `eKYC Video Call Slot assigned to Dr. ${doctor.name}: ${assignedSlot}`);
+  }
+  res.redirect('/admin/dashboard');
+});
+
+// POST /admin/doctors/:id/complete-ekyc - Mark eKYC verified and approve Doctor profile
+const completeEkyc = asyncHandler(async (req, res) => {
+  const doctorId = req.params.id;
+  const doctor = await Doctor.findById(doctorId);
+  if (doctor) {
+    doctor.ekycStatus = 'verified';
+    doctor.isVerified = true;
+    doctor.verificationStatus = 'approved';
+    await doctor.save();
+    setFlash(req, 'success', `eKYC Verification Completed! Dr. ${doctor.name} is now verified and active in the clinic directory.`);
+  }
+  res.redirect('/admin/dashboard');
+});
+
+// POST /admin/doctors/:id/reject-ekyc - Reject eKYC verification application
+const rejectEkyc = asyncHandler(async (req, res) => {
+  const doctorId = req.params.id;
+  const { reason } = req.body;
+  const doctor = await Doctor.findById(doctorId);
+  if (doctor) {
+    doctor.ekycStatus = 'rejected';
+    doctor.isVerified = false;
+    doctor.verificationStatus = 'rejected';
+    if (reason) doctor.ekycSlot.adminNotes = `eKYC Rejected: ${reason}`;
+    await doctor.save();
+    setFlash(req, 'info', `eKYC Application for Dr. ${doctor.name} rejected.`);
+  }
+  res.redirect('/admin/dashboard');
 });
 
 // POST /admin/doctors/add - Add new doctor to clinic directory (Admin created doctors are auto-approved)
@@ -99,6 +155,7 @@ const addDoctor = asyncHandler(async (req, res) => {
       slotDurationMinutes: 30,
     },
     bio: bio ? bio.trim() : `Dr. ${name} is a specialist in ${specialization}.`,
+    ekycStatus: 'verified',
     isVerified: true,
     verificationStatus: 'approved',
   });
@@ -110,7 +167,7 @@ const addDoctor = asyncHandler(async (req, res) => {
 // POST /admin/doctors/:id/approve - Approve pending doctor application
 const approveDoctor = asyncHandler(async (req, res) => {
   const doctorId = req.params.id;
-  const doctor = await Doctor.findByIdAndUpdate(doctorId, { isVerified: true, verificationStatus: 'approved' }, { new: true });
+  const doctor = await Doctor.findByIdAndUpdate(doctorId, { isVerified: true, verificationStatus: 'approved', ekycStatus: 'verified' }, { new: true });
   if (doctor) {
     setFlash(req, 'success', `Dr. ${doctor.name} verified & approved! Added to active clinic directory.`);
   }
@@ -124,7 +181,7 @@ const approveDoctor = asyncHandler(async (req, res) => {
 // POST /admin/doctors/:id/reject - Reject pending doctor application
 const rejectDoctor = asyncHandler(async (req, res) => {
   const doctorId = req.params.id;
-  const doctor = await Doctor.findByIdAndUpdate(doctorId, { isVerified: false, verificationStatus: 'rejected' }, { new: true });
+  const doctor = await Doctor.findByIdAndUpdate(doctorId, { isVerified: false, verificationStatus: 'rejected', ekycStatus: 'rejected' }, { new: true });
   if (doctor) {
     setFlash(req, 'info', `Doctor application for Dr. ${doctor.name} marked as rejected.`);
   }
@@ -185,6 +242,9 @@ const deleteUserAccount = asyncHandler(async (req, res) => {
 
 module.exports = {
   getAdminDashboard,
+  assignEkycSlot,
+  completeEkyc,
+  rejectEkyc,
   addDoctor,
   approveDoctor,
   rejectDoctor,
@@ -192,3 +252,4 @@ module.exports = {
   deleteAppointment,
   deleteUserAccount,
 };
+

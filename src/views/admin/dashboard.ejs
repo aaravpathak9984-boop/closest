@@ -65,7 +65,123 @@
     </div>
   </div>
 
-  <!-- SECTION 0: Pending Doctor Applications Verification (Admin Action Required) -->
+  <!-- SECTION 0: Doctor eKYC Applications & Verification Slot Scheduling -->
+  <% if (ekycDoctors && ekycDoctors.length > 0) { %>
+    <div class="paper-card mb-4" style="padding: 1.5rem; border: 2px solid #8F2D2D; background: rgba(143, 45, 45, 0.02);" id="ekycSec">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+        <div>
+          <span class="badge badge-red" style="font-size: 0.75rem; margin-bottom: 0.25rem;">🛡️ eKYC Compliance Console (<%= ekycDoctors.length %> Applications)</span>
+          <h3 style="margin: 0.1rem 0 0;">Doctor eKYC Applications & Verification Slots</h3>
+          <p style="font-size: 0.82rem; color: var(--color-soft-ink); margin: 0;">
+            Review applicant license numbers, assign live video verification slots, and mark eKYC verification completed.
+          </p>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table class="editorial-table">
+          <thead>
+            <tr>
+              <th>Doctor Applicant</th>
+              <th>Medical License & Govt ID</th>
+              <th>Qualification</th>
+              <th>Requested eKYC Slot</th>
+              <th>Assigned Slot Status</th>
+              <th style="text-align: right;">Admin eKYC Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% ekycDoctors.forEach(doc => { %>
+              <tr>
+                <td>
+                  <div style="font-weight: 600;"><%= doc.name %></div>
+                  <div style="font-size: 0.78rem; color: var(--color-soft-ink);"><%= doc.user ? doc.user.email : '' %></div>
+                </td>
+                <td>
+                  <div style="font-family: var(--font-mono); font-size: 0.82rem; font-weight: 600;">
+                    📜 <%= doc.licenseNumber || 'Not Submitted Yet' %>
+                  </div>
+                  <div style="font-size: 0.75rem; color: var(--color-soft-ink);">
+                    <%= doc.govtIdType %>: <strong><%= doc.govtIdNumber || 'N/A' %></strong>
+                  </div>
+                </td>
+                <td>
+                  <div style="font-weight: 600; font-size: 0.85rem;"><%= doc.qualification || 'MBBS' %></div>
+                  <span class="badge badge-paper" style="font-size: 0.7rem;"><%= doc.specialization %></span>
+                </td>
+                <td>
+                  <% if (doc.ekycSlot && doc.ekycSlot.requestedDate) { %>
+                    <div style="font-family: var(--font-mono); font-size: 0.82rem; font-weight: 600;">
+                      📅 <%= doc.ekycSlot.requestedDate %>
+                    </div>
+                    <div style="font-size: 0.75rem; color: #b45309;">
+                      🕒 <%= doc.ekycSlot.requestedTime %>
+                    </div>
+                  <% } else { %>
+                    <span style="font-size: 0.78rem; color: var(--color-soft-ink); italic;">No slot requested</span>
+                  <% } %>
+                </td>
+                <td>
+                  <% if (doc.ekycStatus === 'verified') { %>
+                    <span class="badge badge-green">✅ eKYC Verified</span>
+                  <% } else if (doc.ekycStatus === 'slot_assigned') { %>
+                    <span class="badge badge-green" style="background: #d1fae5; color: #065f46;">
+                      📅 <%= doc.ekycSlot ? doc.ekycSlot.assignedSlot : 'Slot Confirmed' %>
+                    </span>
+                  <% } else if (doc.ekycStatus === 'applied') { %>
+                    <span class="badge badge-yellow">⏳ Applied (Pending Slot)</span>
+                  <% } else if (doc.ekycStatus === 'rejected') { %>
+                    <span class="badge badge-red">❌ eKYC Rejected</span>
+                  <% } else { %>
+                    <span class="badge badge-paper">Not Applied</span>
+                  <% } %>
+                </td>
+                <td style="text-align: right;">
+                  <div style="display: flex; gap: 0.4rem; justify-content: flex-end; align-items: center; flex-wrap: wrap;">
+                    <!-- Assign Slot Form -->
+                    <form action="/admin/doctors/<%= doc._id %>/assign-slot" method="POST" style="display: flex; gap: 0.3rem;">
+                      <input 
+                        type="text" 
+                        name="assignedSlot" 
+                        placeholder="e.g. 18 Sep 11:00 AM (Room 2)" 
+                        value="<%= doc.ekycSlot && doc.ekycSlot.assignedSlot ? doc.ekycSlot.assignedSlot : (doc.ekycSlot && doc.ekycSlot.requestedDate ? doc.ekycSlot.requestedDate + ' ' + doc.ekycSlot.requestedTime : '') %>"
+                        class="form-control form-control-sm" 
+                        style="width: 170px; font-size: 0.75rem;" 
+                        required 
+                      />
+                      <button type="submit" class="btn btn-outline btn-sm" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">
+                        📅 Assign Slot
+                      </button>
+                    </form>
+
+                    <!-- Complete eKYC Button -->
+                    <% if (doc.ekycStatus !== 'verified') { %>
+                      <form action="/admin/doctors/<%= doc._id %>/complete-ekyc" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-secondary btn-sm" style="color: #1B5E34; font-weight: 600; font-size: 0.75rem; padding: 0.25rem 0.6rem;">
+                          ✅ Complete & Verify
+                        </button>
+                      </form>
+                    <% } %>
+
+                    <!-- Reject Button -->
+                    <% if (doc.ekycStatus !== 'rejected') { %>
+                      <form action="/admin/doctors/<%= doc._id %>/reject-ekyc" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-outline btn-sm" style="color: var(--color-red-accent); font-size: 0.75rem; padding: 0.25rem 0.5rem;">
+                          ❌ Reject
+                        </button>
+                      </form>
+                    <% } %>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- SECTION 0B: Pending Doctor Applications Verification -->
   <% if (pendingDoctors && pendingDoctors.length > 0) { %>
     <div class="paper-card mb-4" style="padding: 1.5rem; border: 2px solid var(--color-red-accent); background: rgba(194, 59, 34, 0.02);" id="pendingSec">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
@@ -77,6 +193,7 @@
           </p>
         </div>
       </div>
+
 
       <div class="table-container">
         <table class="editorial-table">

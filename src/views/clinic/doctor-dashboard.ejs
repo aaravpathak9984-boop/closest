@@ -1,16 +1,57 @@
 <div style="max-width: 1120px; margin: 1.5rem auto;">
-  <!-- Doctor Verification Status Banner -->
-  <% if (doctor && doctor.verificationStatus === 'pending') { %>
+  <!-- Doctor eKYC Status Banner -->
+  <% if (doctor && doctor.ekycStatus === 'not_applied') { %>
     <div class="glass-card sketch-corner mb-3" style="padding: 1.25rem 1.75rem; border-left: 4px solid #D9822B; background: #FFFDF8;">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div>
-          <span class="badge badge-yellow mb-1">⏳ Verification Pending Admin Review</span>
-          <h3 style="margin: 0.1rem 0;">Doctor Application Submitted</h3>
+          <span class="badge badge-yellow mb-1">🛡️ Action Required: Doctor eKYC Verification</span>
+          <h3 style="margin: 0.1rem 0;">Submit Your eKYC Credentials</h3>
           <p style="font-size: 0.88rem; color: var(--color-soft-ink); margin: 0;">
-            Your clinical profile for <strong>Dr. <%= doctor.name %></strong> (<%= doctor.specialization %>) is pending verification by Master Admin (<strong>aaravpathak9984@gmail.com</strong>).
+            Please submit your Medical License Number and Govt ID to request a live video verification slot with Master Admin.
           </p>
         </div>
-        <a href="/appointments/doctor-onboarding" class="btn btn-outline btn-sm">✏️ Edit Application Details</a>
+        <a href="/doctors/ekyc" class="btn btn-primary btn-sm">🚀 Apply for eKYC Now</a>
+      </div>
+    </div>
+  <% } else if (doctor && doctor.ekycStatus === 'applied') { %>
+    <div class="glass-card sketch-corner mb-3" style="padding: 1.25rem 1.75rem; border-left: 4px solid #f59e0b; background: #FFFDF5;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <span class="badge badge-yellow mb-1">⏳ eKYC Application Under Admin Review</span>
+          <h3 style="margin: 0.1rem 0;">Verification Slot Assignment Pending</h3>
+          <p style="font-size: 0.88rem; color: #92400e; margin: 0;">
+            License # <strong><%= doctor.licenseNumber %></strong> • Requested Slot: <strong><%= doctor.ekycSlot ? doctor.ekycSlot.requestedDate : '' %> at <%= doctor.ekycSlot ? doctor.ekycSlot.requestedTime : '' %></strong>. Master Admin is assigning your video call slot.
+          </p>
+        </div>
+        <a href="/doctors/ekyc" class="btn btn-outline btn-sm">📋 View eKYC Details</a>
+      </div>
+    </div>
+  <% } else if (doctor && doctor.ekycStatus === 'slot_assigned') { %>
+    <div class="glass-card sketch-corner mb-3" style="padding: 1.25rem 1.75rem; border-left: 4px solid #10b981; background: #f0fdf4;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <span class="badge badge-green mb-1">📅 eKYC Video Call Slot Confirmed</span>
+          <h3 style="margin: 0.1rem 0;">Slot: <%= doctor.ekycSlot ? doctor.ekycSlot.assignedSlot : 'Confirmed' %></h3>
+          <p style="font-size: 0.88rem; color: #065f46; margin: 0;">
+            <%= (doctor.ekycSlot && doctor.ekycSlot.adminNotes) ? doctor.ekycSlot.adminNotes : 'Please keep original Medical Council registration certificate ready for video verification.' %>
+          </p>
+        </div>
+        <a href="/doctors/ekyc" class="btn btn-outline btn-sm">📋 View Slot Details</a>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- Doctor Verification Status Banner -->
+  <% if (doctor && doctor.verificationStatus === 'pending' && doctor.ekycStatus === 'verified') { %>
+    <div class="glass-card sketch-corner mb-3" style="padding: 1.25rem 1.75rem; border-left: 4px solid #D9822B; background: #FFFDF8;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <span class="badge badge-yellow mb-1">⏳ Verification Pending Final Approval</span>
+          <h3 style="margin: 0.1rem 0;">eKYC Verified — Awaiting Admin Activation</h3>
+          <p style="font-size: 0.88rem; color: var(--color-soft-ink); margin: 0;">
+            Your clinical eKYC is completed. Master Admin (<strong>aaravpathak9984@gmail.com</strong>) is finalizing activation into the directory.
+          </p>
+        </div>
       </div>
     </div>
   <% } else if (doctor && doctor.verificationStatus === 'rejected') { %>
@@ -20,13 +61,14 @@
           <span class="badge badge-red mb-1">❌ Verification Rejected</span>
           <h3 style="margin: 0.1rem 0;">Application Requires Revision</h3>
           <p style="font-size: 0.88rem; color: var(--color-red-accent); margin: 0;">
-            Master Admin requested revisions for your doctor application. Please update your details and resubmit.
+            Master Admin requested revisions for your doctor eKYC application. Please update your details and resubmit.
           </p>
         </div>
-        <a href="/appointments/doctor-onboarding" class="btn btn-primary btn-sm">✏️ Update & Resubmit Application</a>
+        <a href="/doctors/ekyc" class="btn btn-primary btn-sm">✏️ Update & Resubmit eKYC Application</a>
       </div>
     </div>
   <% } %>
+
 
   <!-- Doctor Header Bar -->
   <div class="glass-card sketch-corner mb-3" style="padding: 1.5rem 2rem;">

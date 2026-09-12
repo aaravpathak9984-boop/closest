@@ -93,17 +93,21 @@ const signup = asyncHandler(async (req, res) => {
       role: selectedRole,
     });
 
-    // If registered as Doctor, create associated Doctor profile (pending verification)
+    // If registered as Doctor, create associated Doctor profile (pending eKYC application & verification)
     if (user.role === 'doctor') {
       await Doctor.create({
         user: user._id,
         name: user.name,
         specialization: specialization ? specialization.trim() : 'General Medicine',
-        qualification: 'MBBS',
-        experienceYears: 5,
-        consultationFee: 500,
-        bio: `Dr. ${user.name} is a specialist in ${specialization || 'General Medicine'}.`,
+        qualification: '',
+        licenseNumber: '',
+        govtIdType: 'Medical Council Registration Certificate',
+        govtIdNumber: '',
+        experienceYears: 0,
+        consultationFee: 0,
+        bio: `Dr. ${user.name} is a medical practitioner in ${specialization || 'General Medicine'}.`,
         workingHours: { start: '09:00', end: '17:00', slotDurationMinutes: 30 },
+        ekycStatus: 'not_applied',
         isVerified: false,
         verificationStatus: 'pending',
       });
@@ -112,8 +116,8 @@ const signup = asyncHandler(async (req, res) => {
     // Automatically create session after signup
     tokenService.createSession(req, user);
     if (user.role === 'doctor') {
-      setFlash(req, 'info', `Welcome, Dr. ${user.name}! Your doctor application is submitted and pending admin verification by aaravpathak9984@gmail.com.`);
-      return res.redirect('/appointments/doctor-queue');
+      setFlash(req, 'info', `Welcome, Dr. ${user.name}! Please complete your Doctor eKYC Application to schedule your verification slot and get approved.`);
+      return res.redirect('/doctors/ekyc');
     }
 
     setFlash(req, 'success', `Welcome, ${user.name}! Your ${user.role} account has been created.`);

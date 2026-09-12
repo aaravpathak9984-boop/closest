@@ -75,11 +75,10 @@ Traditional clinic appointment booking and management systems suffer from five c
 - **Rejected Applications Archive**: Dedicated section allowing Admin to re-evaluate and re-approve rejected doctor registrations.
 - **User Accounts & Database Deletion**: Master user management table allowing Admin to delete any account from MongoDB.
 
-### 🔒 4. Data Protection & Security
-- **Bcrypt Password Hashing**: Passwords are salted (cost factor 10) and hashed before database insertion.
-- **Password Visibility Toggle**: Single-scope timestamp-deduplicated toggle (`👁️` / `🙈`) on login & signup forms.
-- **Master Admin Recovery**: Auto-sync and re-hash fallback for master credentials (`aaravpathak9984@gmail.com`).
-- **Cascade Account Deletion**: Self-service deletion purges user, doctor/patient profiles, appointments, and reviews from MongoDB.
+### 🛡️ 4. Doctor eKYC Verification & Video Slot Assignment (`/doctors/ekyc`)
+- **No Auto-Filled Profile**: Newly registered doctors must complete an explicit eKYC Verification Application with Medical Council License Number, Government ID Type, ID Number, Degree Qualification, and requested video call date/time slot.
+- **eKYC Status Tracking Widget**: Real-time status cards on Doctor Dashboard (`not_applied`, `applied`, `slot_assigned`, `verified`, `rejected`).
+- **Master Admin eKYC Console (`/admin/dashboard`)**: Master Admin assigns live video verification call slots, provides instructions, and completes eKYC to verify and activate doctors in the public clinic directory.
 
 ---
 
@@ -99,16 +98,22 @@ Traditional clinic appointment booking and management systems suffer from five c
 | `POST` | `/profile/delete-account`| Protected | **Permanently delete user account & linked data from MongoDB** |
 | `GET` | `/doctors` | Public | Browse verified doctors with search & specialty filters |
 | `GET` | `/doctors/:id` | Public | Detailed doctor profile & patient reviews feed |
+| `GET` | `/doctors/ekyc` | Doctor / Admin | Doctor eKYC application & video call slot request form |
+| `POST` | `/doctors/ekyc` | Doctor / Admin | Submit Medical Council license, Govt ID, and slot request |
 | `POST` | `/doctors/:id/reviews` | Protected | Submit patient star rating & consultation review |
 | `GET` | `/appointments/book/:id`| Protected | Appointment booking form with slot availability |
 | `POST` | `/appointments/book` | Protected | Process booking with double-booking collision prevention |
 | `GET` | `/appointments/my-appointments`| Patient | Patient appointment history & live queue tokens |
 | `GET` | `/appointments/doctor-queue`| Doctor / Admin | Doctor clinical workspace, calendar date filter & queue |
 | `POST` | `/appointments/:id/status`| Doctor / Admin | Update appointment status (Accept, Reject, Complete) |
-| `GET` | `/admin/dashboard` | Admin Only | Master Admin console, doctor approvals & DB user deletion |
+| `GET` | `/admin/dashboard` | Admin Only | Master Admin console, eKYC slot assignment & user deletion |
+| `POST` | `/admin/doctors/:id/assign-slot`| Admin Only | Assign live eKYC video call verification slot to Doctor |
+| `POST` | `/admin/doctors/:id/complete-ekyc`| Admin Only | Mark eKYC verified and activate Doctor profile |
+| `POST` | `/admin/doctors/:id/reject-ekyc`| Admin Only | Reject Doctor eKYC application |
 | `POST` | `/admin/doctors/:id/approve`| Admin Only | Approve pending doctor application |
 | `POST` | `/admin/doctors/:id/reject`| Admin Only | Reject pending doctor application |
 | `POST` | `/admin/users/:id/delete`| Admin Only | **Delete user account completely from MongoDB database** |
+
 
 ---
 
