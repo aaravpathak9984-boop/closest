@@ -22,7 +22,7 @@ Traditional clinic appointment booking and management systems suffer from five c
 2. **Opaque Waiting Room Status**: Patients arrive at clinics with zero visibility into their queue position, leading to overcrowded waiting rooms and unpredictable wait times.
 3. **Unverified Doctor Listings**: Public healthcare portals often list unverified medical profiles, exposing patients to unaccredited practitioners.
 4. **Superficial Review Spam**: Existing platforms suffer from fake, unverified reviews that misinform patients seeking specialist care.
-5. **Lack of Administrative Oversight & Data Privacy**: Hospital administrators lack real-time revenue analytics, branch management, and self-service account deletion options compliant with modern data protection regulations.
+5. **Lack of Administrative Oversight & Data Privacy**: Hospital administrators lack real-time appointment metrics, user account management, and self-service account deletion options compliant with modern data protection regulations.
 
 ---
 
@@ -36,7 +36,7 @@ Traditional clinic appointment booking and management systems suffer from five c
 | **Live Queue Tokens** | Assigns live tokens (`Token #1`, `Token #2`, `Token #3`) with estimated wait times (~15 mins/patient). Patients track their queue position live. |
 | **Admin Verification Gate** | Newly registered doctors are held in a `pending` state until Master Admin reviews and approves their credentials before appearing in public searches. |
 | **Verified Patient Reviews** | Reviews can only be published by authenticated users, automatically updating the doctor's average rating (1.0–5.0). |
-| **Multi-Branch Network** | Manages multiple hospital branches, medical departments (Cardiology, Neurology, Pediatrics, etc.), and patient prescriptions in one unified portal. |
+| **Streamlined 6-Entity Architecture** | Operates on a focused, high-performance database schema (Users, Patients, Doctors, Admins, Bookings, Reviews). |
 | **Complete Data Ownership** | Enables users and admins to permanently delete accounts and linked consultation records from the database with 1-click self-service. |
 
 ---
@@ -49,7 +49,7 @@ Traditional clinic appointment booking and management systems suffer from five c
 | **Live Waiting List & Token Position** | ❌ Static Time Slots | ✅ **Live Tokens (`Token #1 - Next Up`) with Est. Wait Time** |
 | **Doctor Credential Verification** | ⚠️ Delayed Manual Audits | ✅ **Strict Admin Verification Gate (Approve / Reject)** |
 | **Interactive Calendar Date Picker** | ⚠️ Basic Lists | ✅ **Interactive Datepicker & Volume Metrics by Date** |
-| **Branch & Department Network** | ❌ Disconnected Sites | ✅ **Unified Multi-Branch & Medical Record Tracking** |
+| **Clean High-Performance DB Schema** | ⚠️ Bloated & Complex | ✅ **Streamlined 6-Entity MongoDB Atlas Schema** |
 | **Permanent Database Deletion** | ❌ Complex Support Tickets | ✅ **1-Click Self-Service Permanent DB Account Purge** |
 | **Design Aesthetic** | ⚠️ Generic Corporate UI | ✅ **macOS Glassmorphism & Editorial Paper Aesthetics** |
 
@@ -70,10 +70,9 @@ Traditional clinic appointment booking and management systems suffer from five c
 - **My Appointments & Live Queue Tokens**: Track active booking status, live token number (`Token #2 - Waiting (~15m wait)`), or cancel bookings.
 
 ### 👑 3. Master Admin Operations Console (`/admin/dashboard`)
-- **Revenue & Operational Analytics**: Total Clinic Revenue (₹), Patient Accounts count, Specialist count, and Consultation metrics.
+- **Operational Analytics**: Total Patients count, Verified Specialist count, Doctor Applications, and Consultation metrics.
 - **Doctor Verification Queue**: Review pending doctor applications with 1-click `Verify & Approve` or `Reject`.
 - **Rejected Applications Archive**: Dedicated section allowing Admin to re-evaluate and re-approve rejected doctor registrations.
-- **Clinic Network Management**: Overview of Branches, Medical Departments, and Patient Prescriptions.
 - **User Accounts & Database Deletion**: Master user management table allowing Admin to delete any account from MongoDB.
 
 ### 🔒 4. Data Protection & Security
@@ -127,3 +126,4 @@ Traditional clinic appointment booking and management systems suffer from five c
 ## 🚀 Conclusion
 
 **MediClinic Care (`closest`)** sets a new standard for healthcare management platforms. By solving core industry friction points—double-booking collisions, queue uncertainty, unverified doctors, and data privacy concerns—it provides a production-ready solution for modern clinics, practitioners, and patients.
+

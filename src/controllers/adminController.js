@@ -2,11 +2,7 @@
 const Doctor = require('../models/Doctor');
 const User = require('../models/User');
 const Appointment = require('../models/Appointment');
-const Branch = require('../models/Branch');
-const Department = require('../models/Department');
-const MedicalRecord = require('../models/MedicalRecord');
 const doctorService = require('../services/doctorService');
-const seedService = require('../services/seedService');
 const authService = require('../services/authService');
 const { setFlash } = require('../utils/flash');
 const asyncHandler = require('../utils/asyncHandler');
@@ -14,13 +10,9 @@ const asyncHandler = require('../utils/asyncHandler');
 // GET /admin/dashboard - Clinic Admin Master Dashboard
 const getAdminDashboard = asyncHandler(async (req, res) => {
   await doctorService.seedInitialDoctors();
-  await seedService.seedAllDomainEntities();
 
   const doctors = await Doctor.find().populate('user', 'name email').sort({ name: 1 });
   const totalPatients = await User.countDocuments({ role: 'patient' });
-  const branches = await Branch.find().sort({ branchName: 1 });
-  const departments = await Department.find().sort({ name: 1 });
-  const medicalRecords = await MedicalRecord.find().populate('doctor').sort({ createdAt: -1 });
 
   const filter = {};
   if (req.query.doctor) {
@@ -45,9 +37,6 @@ const getAdminDashboard = asyncHandler(async (req, res) => {
     totalRevenue,
     totalPatients,
     totalDoctors: doctors.length,
-    totalBranches: branches.length,
-    totalDepartments: departments.length,
-    totalMedicalRecords: medicalRecords.length,
     totalAppointments: allAppointments.length,
     pendingCount: allAppointments.filter((a) => a.status === 'pending').length,
     acceptedCount: allAppointments.filter((a) => a.status === 'accepted').length,
@@ -72,9 +61,6 @@ const getAdminDashboard = asyncHandler(async (req, res) => {
     pendingDoctors,
     rejectedDoctors,
     allUsers,
-    branches,
-    departments,
-    medicalRecords,
     appointments,
     metrics,
     selectedDoctor: req.query.doctor || '',
